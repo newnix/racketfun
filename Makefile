@@ -16,4 +16,4 @@ status:
 	@${DVCS} status
 
 push:
-	@gitsync -r 
+	@gitsync -r ${REPONAME} -n master
