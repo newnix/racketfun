@@ -89,3 +89,54 @@
 (reply3 42)
 (reply3 "howdy")
 (reply3 "hello")
+
+; A similar pattern is a series of nested conditionals, often including a 
+; sequence of tests to determine how to proceed, like this function:
+(printf "\nNow defining a function, (reply-more s), to use tests in the conditionals\n")
+(define (reply-more s)
+	(if (and (<= 5 (string-length s))
+					 (equal? "hello" (substring s 0 5)))
+			(printf "Why, hello there!\n")
+			(if (or (equal? "bye" (substring s 0 3))
+							(if (<= 7 (string-length s)) 
+									(equal? "goodbye" (substring s 0 7))
+									#f))
+					(printf "Hasta luego!\n")
+					(if (equal? "?" (substring s (- (string-length s) 1)))
+							(printf "No idea\n")
+							(printf "Eh?")))))
+
+; thanks to some liberties in this exercise, I had to add some additional bounds-checking,
+; fortunately this was pretty simple, just add another condition to the execution path ensuring that 
+; the string is long enough to satisfy the substring comparisons at a given index
+(printf "Now trying to call it with arguments \"hello\", \"what?\", and \"bye\"\n")
+
+(reply-more "hello")
+(reply-more "what?")
+(reply-more "bye")
+
+; The above tests can apparently be done in a shorthand form known as a "cond" expression,
+; a nearly identical function using "cond" will be implemented here:
+(printf "\nNow a similar function, (reply-cond s) will be implemented using \"cond\"\n")
+(define (reply-cond s)
+	(cond
+		[(and (<= 5 (string-length s))
+					(equal? "hello" (substring s 0 5)))
+		 (printf "Hello, meatbag!\n")]
+		[(and (<= 7 (string-length s))
+					(equal? "goodbye" (substring s 0 7)))
+		 (printf "So long, greasy fur puppet\n")]
+		[(and (<= 3 (string-length s))
+					(equal? "bye" (substring s 0 3)))
+		 (printf "And good riddance!\n")]
+		[(equal? "?" (substring s (- (string-length s) 1)))
+		 (printf "Are you on drugs?\n")]
+		[else (printf "ERROR\n")]))
+; the use of brackets is purely by convention, Racket sees brackets as interchangeable with parenthesis,
+; the only caveat being that an expression must have each symbol balanced appropriately. 
+; Racket convention would be to use parenthesis under normal situations, and brackets 
+; to demand more attention to the function/expresssion
+(printf "Now calling (reply-cond s) with the same arguments as (reply-more s) previously\n")
+(reply-cond "hello")
+(reply-cond "what?")
+(reply-cond "bye")
