@@ -17,3 +17,6 @@ status:
 
 push:
 	@gitsync -r ${REPONAME} -n master
+
+diff:
+	@${DVCS} diff

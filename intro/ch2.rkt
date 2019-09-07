@@ -1,5 +1,58 @@
 #lang racket
 
+; This is simply copying Racket documentation on simple
+; definitions and expressions, being used as a means to help solidify 
+; the learning process of working with Racket
+
+; This is simple definiton, it bind the given ID to the result of an
+; expression. 
+
+(define pie 3) ; So now calling "pie" prints the number 3
+
+; Now call the macro
+pie
+
+; This is slightly more complicated, binding the first ID to 
+; a function (also referred to as a /procedure/), in this case
+; the expressions are the body of the function, which returns 
+; the value of the last expression
+
+(define (sub1 str)       ; Defines "sub1" as a function with one argument
+	(substring str 0 pie))
+
+; Now we call the function
+(sub1 "ayy, lmao")
+
+; This is an example of a somewhat more complicated function definition
+; a function can include multiple expressions in its body, but only the 
+; value of the last expression is actually returned when called. 
+; The other expressions are only evaluated for useful side-effects, 
+; such as printing messages to the console
+
+(define (bake flavor)
+	(printf "Preheating the oven...\n")
+	(printf "Prepping ~s pie ingredients...\n" flavor)
+	(string-append flavor " pie"))
+
+; Now call the function to demonstrate its use
+(bake "apple")
+
+; Since Racket is functional, it's generally desirable to avoid 
+; side-effects. As an example, this "nobake" function will not 
+; show the same behaviour as "bake", so any argument provided 
+; is essentially ignored as "string-append" is not enclosed in
+; parenthesis, making it just another expression in the function definition
+
+(define (nobake flavor)
+	string-append flavor "jello")
+
+; Calling it will only print out "jello"
+
+(nobake "blue")
+
+; Note on whitespace: IT DOESN'T FUCKING MATTER FOR COMPILATION!
+; However, by convention, the general style used above is considered "correct"
+
 ; In Racket, identifiers can be pretty much anything except the following:
 ; ( ) [ ] { } " , ' ` ; # | \
 ; or number constants, aside from these, you can use any string of text as identifiers
@@ -199,3 +252,57 @@
 (twice less-sure "Really")
 (printf "Calling (twice louder2 \"Really\")\n")
 (twice louder2 "Really")
+
+; 2.2.8: Local binding with define, let, and let*
+; In the body of a function, definitions can appear before the body expressions:
+;		(define (<id> <id>*) <definition> <expr)
+;		(lambda (<id>*) <definition> <expr>)
+; Definitions at the start of a function body are local to the function body.
+; This is exemplified in the following function (converse s)
+(define (converse s)
+	(define (starts? s2) ; Function locally bound to (converse s)
+		(define len2 (string-length s2)) ; Function locally bound to starts?
+		(and (>= (string-length s) len2)
+				 (equal? s2 (substring s 0 len2))))
+	(cond
+		[(starts? "hello") "Hi!"]
+		[(starts? "goodbye") "Bye!"]
+		[else "huh?"]))
+
+; Now call the "converse" function
+(printf "Calling (converse \"hello\")\n")
+(converse "hello there!")
+(printf "Calling (converse \"que\")\n")
+(converse "que")
+(printf "Calling (converse \"goodbye\")\n")
+(converse "goodbye")
+; If we attempted to use the "starts?" function itself, we'd have a failure, 
+; as there's no such function defined at the global/top scope
+
+; An alternative means of creating local bindings is via "let",
+; this has the advantage of being usable in any expression position.
+; "let" also binds many identifiers at once, rather than requiring 
+; separate "define" statements per each identifier. The general usage
+; can be shown as such:
+;		(let ({[<id> <expr]}* ) <expr>)
+; Each binding clause is an identifier and an expression surrounded by 
+; brackets, and the expressions after the clauses are the body of the "let".
+; In each clause, the identifier is bound to the result of the 
+; expression for use in the body. For example:
+(let ([x (random 4)]
+			[o (random 4)])
+	(cond
+		[(> x o) (printf "X wins!\n")]
+		[(> o x) (printf "O wins!\n")]
+		[else (printf "Cat's game!\n")]))
+
+; The bindings of a "let" form are only available in the body of the "let", 
+; so binding clauses cannot refer to each other. However, the "let*" form
+; allows later clauses to use earlier bindings:
+(let* ([x (random 100)]
+			 [o (random 100)]
+			 [diff (number->string (abs (- x o)))])
+	(cond
+		[(> x o) (printf "X wins by ~a!\n" diff)]
+		[(> o x) (printf "O wins by ~a!\n" diff)]
+		[else (printf "Cat's game!\n")]))

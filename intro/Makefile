@@ -1,0 +1,3 @@
+.POSIX:
+
+include ../Makefile
