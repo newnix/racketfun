@@ -7,7 +7,7 @@
 ; Continuing on with Racket usage,
 ; function calls are also referred to as "procedure applications" 
 ; some examples of pre-defined functions follow
-(printf "Using (string-append \"Fuck\" \" Python\" \" BS\"\n")
+(printf "Using (string-append \"Fuck\" \" Python\" \" BS\")\n")
 (string-append "Fuck" " Python" " BS")
 
 (printf "Using (substring \"exile.digital\" 0 5)\n")
@@ -140,3 +140,62 @@
 (reply-cond "hello")
 (reply-cond "what?")
 (reply-cond "bye")
+
+; Revisiting function calls (2.2.6)
+; Apparently, the prior explanation of function calls in Racket was oversimplified.
+; The actual function syntax can be expressed as "(<expr> <expr>*)" where the first expression
+; is often an identifier, such as "string-append", but it can be anything that evaluates to a function, 
+; like this conditional expression:
+(define (double v)
+	;; This is a pretty awesome capability
+	((if (string? v) string-append +) v v))
+
+(printf "Calling (double v) with arguments kek and 16\n")
+(double "kek")
+(double 16)
+
+; Syntactically, the first expression in a function could be a number, but that causes an error
+; due to numbers not being functions
+
+; 2.2.7: Anonymous functions with lambda
+; Since it'd be tedious to program if all numbers had to be named, and the same is true of functions.
+; For example, having a function "twice" that takes a function and an argument can be used conveniently
+; if you already have a name for the function, such as "sqrt"
+(define (twice f v) 
+	(f (f v)))
+(printf "Calling (twice sqrt 16)\n")
+(twice sqrt 16)
+
+; We can also define a function that does not yet exist, and pass it as an argument to "twice"
+(define (louder s)
+	(string-append s "!"))
+(printf "Calling (twice louder \"ERROR\")\n")
+(twice louder "ERROR")
+
+; Now, if we only use the function inside of another function, it may be more beneficial to
+; use an anonymous function, or "lambda function". We can use "lambda" which produces a function 
+; during its evaluation. For example:
+(printf "Calling (twice (lambda (s) \n\t(string-append s \"!\"))\n\t\"HELLO\")\n")
+(twice (lambda (s)
+				 (string-append s "!"))
+			 "HELLO")
+
+; Another use of "lambda" is as the result of a function that generates functions,
+; such os the following (make-add-suffix s2)
+(define (make-add-suffix s2)
+	(lambda (s) (string-append s s2)))
+(printf "Calling (twice (make-add-suffix \"!\") \"Hello\")\n")
+(twice (make-add-suffix "!") "Hello")
+(printf "Calling (twice (make-add-suffix \"?!\") \"Hello\")\n")
+(twice (make-add-suffix "?!") "Hello")
+(printf "Calling (twice (make-add-suffix \"...\") \"Hello\")\n")
+(twice (make-add-suffix "...") "Hello")
+
+; Now some more examples of how we can use the lambda results, 
+; and how the lexical scoping of Racket "remembers" the right variables/arguments
+(define louder2 (make-add-suffix "!"))
+(define less-sure (make-add-suffix "?"))
+(printf "Calling (twice less-sure \"Really\")\n")
+(twice less-sure "Really")
+(printf "Calling (twice louder2 \"Really\")\n")
+(twice louder2 "Really")
