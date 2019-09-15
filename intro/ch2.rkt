@@ -306,3 +306,85 @@ pie
 		[(> x o) (printf "X wins by ~a!\n" diff)]
 		[(> o x) (printf "O wins by ~a!\n" diff)]
 		[else (printf "Cat's game!\n")]))
+
+; Begin 2.3: Lists, Iteration, and Recursion
+; Since Racket's a LISP dialect, lists are still a prominent feature of the language.
+; The list function takes any number of values and returns a list containing the values:
+(printf "Running some examples of the `list` function:\n")
+(list "red" "green" "blue")
+(list 1 2 3 4 5 6 7 8 9 0)
+; A list literal is displayed as '("red" "green" "blue")
+(printf "Running (length (list \"R\" \"G\" \"B\"))\n")
+(length (list "R" "G" "B"))
+(define (rgb)
+	(list "R" "G" "B"))
+(define (cmyk)
+	(list "C" "M" "Y" "K"))
+(printf "Defined (rgb) as (list \"R\" \"G\" \"B\")\n")
+(printf "Running: (length (rgb))\n")
+(length (rgb))
+(printf "Now to get the value at position 1\n")
+(list-ref (rgb) 1)
+(printf "Appending CMYK to the list\n")
+(append (rgb) (cmyk))
+(define (colorschemes)
+	(append (rgb) (cmyk)))
+(printf "Defined (colorschemes) as the appended list\n")
+(colorschemes)
+; In addition to the ability to calculate length, append, and reference by index, 
+; there's the ability to reverse a list and check for element membership
+(printf "Printing the colorschemes in reverse\n")
+(reverse (colorschemes))
+(printf "Checking for membership of \"Z\" in (colorschemes)\n")
+(member "Z" (colorschemes))
+; 2.31
+; In addition to these simple functions, there are functions to iterate over the elements of a list,
+; these are roughly analagous to for loops in other languages
+; The first of these is (map), which uses per-element results to populate a new list:
+(printf "Running: (map sqrt (list 1 4 9 16))\n")
+(map sqrt (list 1 4 9 16))
+(printf "Attempting to use (map) on a lamba function as well\n")
+(map (lambda (i)
+			 (string-append i "!"))
+		 (colorschemes))
+; There's also the ability to use (andmap) and (ormap) to return results 
+; based on logical AND or OR results with the input list(s)
+; map functions can accept multiple lists, but they must all have the same number of elements,
+; and the given function must accept one argument for each list like so:
+(map (lambda (s n)
+			 (substring s 0 n))
+		 (map (lambda (i) (string-append i "!")) (cmyk))
+		 ; It's nice that syntax highlighting will change the color of parens used to enclose a list
+		 ; vs other s-exprs
+		 '(1 2 1 2))
+
+(printf "Running: (andmap string? (colorschemes)) (expecting #t)\n")
+(andmap string? (colorschemes))
+(printf "Now creating a literal list: '(\"R\" 255 \"G\" 128 \"B\" 64) as rgbval\n")
+(define rgbval '("R" 255 "G" 128 "B" 64))
+rgbval
+(printf "Running: (ormap number? rgbval)\n")
+(ormap number? rgbval)
+; The filter function keeps elemnts for which the body result is true and 
+; discards the elements for which it's false
+(printf "Filtering out the numbers from ~s\n" rgbval)
+(filter string? rgbval)
+(printf "Filtering out the strings from ~s\n" rgbval)
+(filter number? rgbval)
+
+; A less popular function (foldl) generalizes some iteration functions.
+; It uses the per-element function to both process an element and combine it with the "current"
+; value, so the per-element function takes an extra first argument, and a starting "current"
+; value must be provided before the lists:
+(printf "Demonstrating foldl with other list functions on ~s\n" rgbval)
+(foldl (lambda (elem v)
+				 (+ v (* elem elem)))
+			 0
+			 (filter number? (reverse rgbval)))
+; 2.3.2
+; Although map and other iteration functions are predefined, they're not primitive in any
+; interesting sense, they can be written from scratch using some primitives covered here:
+(define numbers '(0 1 2 3 4 5 6 7 8 9))
+(printf "Creating a new list, \"numbers\": ~s\n" numbers)
+(printf "First element: ~s\n" (first numbers))
+(printf "Rest of the elemonts: ~s\n" (rest numbers))

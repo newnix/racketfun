@@ -9,6 +9,11 @@ REPONAME = racketfun
 ## might want to compile to a binary
 CC = raco
 
+SOURCEXT = .rkt
+
+## Make targets
+TARGETS = commit status push diff help
+
 commit:
 	@${DVCS} commit
 
@@ -20,3 +25,11 @@ push:
 
 diff:
 	@${DVCS} diff
+
+help:
+	@echo "Valid targets; ${TARGETS}"
+	@echo -e "\thelp: This help message"
+	@echo -e "\tcommit: Run ${DVCS} commit"
+	@echo -e "\tstatus: Run ${DVCS} status"
+	@echo -e "\tpush: Run gitsync -r ${REPONAME} -n master"
+	@echo -e "\tdiff: Run ${DVCS} diff"
