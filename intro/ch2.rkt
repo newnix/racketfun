@@ -388,3 +388,78 @@ rgbval
 (printf "Creating a new list, \"numbers\": ~s\n" numbers)
 (printf "First element: ~s\n" (first numbers))
 (printf "Rest of the elemonts: ~s\n" (rest numbers))
+
+; To create a new node for linked lists, that is to add a node to the front of the 
+; list, we use the cons function, which is short for "construct".
+; To get an empty list to start with, use the empty constant:
+(printf "Creating new ephemeral list with empty and cons\n")
+empty
+(printf "Since empty is a constant, we can also use it to generate a single node list\n(cons \"head\" empty)\n")
+(cons "head" empty)
+(printf "And now add tail to the front\n")
+(cons "tail" (cons "head" empty))
+(printf "Testing for truth with (empty? empty)\n")
+(empty? empty)
+(printf "Testing both cons? and empty? with ~s\n" numbers)
+(cons? numbers)
+(empty? numbers)
+; Additionally, cons? will detect a non-empty list and empty? will detect an empty list as the truth value
+; obviously, using this, we can simply use either to get both states tested and just switch on true/false
+(printf "Using these tools, we can implement our own O(n) length calculation!\n")
+(define (on-len lst)
+	(cond
+		[(empty? lst) 0]
+		[else (+ 1(on-len (rest lst)))]))
+(printf "Using (on-len ~s)\n" numbers)
+(on-len numbers)
+
+; We can use the same concept to build our own version of map
+(printf "Now constructing on-map\n")
+(define (on-map f lst)
+	(cond
+		[(empty? lst) empty] ; Return empty list if given empty list
+		[else (cons (f (first lst)) ; Else copy the 1st value of lst into f and recurse with (rest lst)
+								(on-map f (rest lst)))]))
+(printf "Now running (on-map string-downcase ~s)\n" (colorschemes))
+(on-map string-downcase (colorschemes))
+
+;; 2.3.3
+;; Tail recursion:
+; Both the on-map and on-list functions run in O(n) space for a list of length n. 
+; this is pretty easy to visualize by seeing how on-list would have to evaluate for 
+; (on-len (rgb)):
+; = (+ 1 (on-len (list "b" "g")))
+; = (+ 1 (+ 1 (on-len (list "g"))))
+; = (+ 1 (+ 1 (+ 1 (on-len (list)))))
+; = (+ 1 (+ 1 (+ 1 0)))
+; = (+ 1 (+ 1 1))
+; = (+ 1 2)
+; = 3
+; This pattern continues for as long as the list han entries
+; This can be avoided by counting as we encounter entries like so:
+(printf "Building c-len definition...\n")
+(define (c-len lst)
+	; Internal function iter:
+	(define (iter lst len)
+		(cond
+			[(empty? lst) len]
+			[else (iter (rest lst) (+ len 1))]))
+	; body of c-len calls iter:
+	(iter lst 0))
+(printf "Calling (c-len ~s)\n" numbers)
+(c-len numbers)
+; The evaluation for c-len is done in constant space, so if given say, (c-len (rgb))
+; the execution would look like so:
+; (c-len (rgb))
+; (c-len '("R" "G" "B"))
+; = (iter (list "R" "G" "B") 0)
+; = (iter (list "G" "B") 1)
+; = (iter (list "B") 2)
+; = (iter (list) 3)
+; = 3
+; It still takes O(n) time, but not O(n) space
+; This kind of optimization is referred to as "tail call optimization" 
+; as an expression in the tail position with respect to another expression
+; will not take extra computational space over the other expression.
+
+; A similar, though often less worthwhile optimization can be made to on-map
