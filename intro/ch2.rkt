@@ -463,3 +463,67 @@ empty
 ; will not take extra computational space over the other expression.
 
 ; A similar, though often less worthwhile optimization can be made to on-map
+; as demonstrated below, but this will have the resulting list returned in reverse order
+(define (rmap f lst) 
+	(define (iter lst br)
+		(cond
+			[(empty? lst) (reverse br)]
+			[else (iter (rest lst)
+									(cons (f (first lst))
+												br))]))
+	(iter lst empty))
+;; The above function is essentially the same as:
+(define (rmap2 f lst)
+	(for/list ([i lst])
+					 (f i)))
+
+(printf "Now running (rmap string-downcase ~s\n" (colorschemes))
+(rmap string-downcase (colorschemes))
+(printf "Now running (rmap2 string-downcase ~s\n" (colorschemes))
+(rmap2 string-downcase (colorschemes))
+
+;; Iteration in Racket is a special case of recursion, though in other languages
+;; iteration can be preferable to reduce your call stack
+;; In Racket, tail call recursion is essentially the same as a loop with an exit condition
+
+;; 2.3.4:
+;; An example of how to remove consecutive repeated values from a list using recursion:
+(define (rdups l) 
+	(cond
+		[(empty? l) empty] ; If list is empty, return empty list
+		[(empty? (rest l)) l] ; Return the list if there's only one node
+		[else
+			(let ([i (first l)])
+				(if (equal? i (first (rest l)))
+						(rdups (rest l))
+						(cons i (rdups (rest l)))))]))
+;; Also define a list of duplicate values
+(define dupstr '(0 0 0 1 1 1 2 3 3 4 4 5 5 5 5 5))
+(printf "Removing duplicates from ~s\n" dupstr)
+(rdups dupstr)
+
+;; 2.4
+;; Pairs, Lists, and Racket Syntax
+;; The cons function will actually accept any two values, not just a list as the second argument.
+;; When the second argument is not empty or created by cons, a pair is created. This
+;; has slightly different syntax, as the the elements are separated by a: . 
+(printf "Bulding a pair with (cons \"exile\" \"digital\"): ~s\n" (cons "exile" "digital"))
+
+;; This means that the result of cons is not always a list, the more traditional
+;; name for cons? is pair? and the fist/rest functions are historically car/cdr
+;; some examples of use:
+(car (cons 1 2))
+(cdr (cons 1 2))
+(pair? empty)
+(pair? (cons 1 2))
+(pair? (list 1 2 3))
+
+;; odds are that a non-list pair will be encountered only when making mistakes, 
+;; but can be intentional such as in the make-hash function, which takes a list of 
+;; pairs, using (car '(1 . "foo")) for the key and (cdr '(1 . "foo"))  for the value
+;; printing pairs however, can have confusing results like so:
+(define pair0 '(0 . ( 1 . 2)))
+(define pair1 '(0 . (1 . (2 . ()))))
+(printf "Displaying pairs can be confusing, so extar care should be taken when operating on pairs/lists:\n")
+(printf "\t'(0 . (1 . 2)) -> ~s\n" pair0)
+(printf "\t'(0 . (1 . (2 . ()))) -> ~s\n" pair1)
