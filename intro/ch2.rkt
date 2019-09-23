@@ -527,3 +527,8 @@ empty
 (printf "Displaying pairs can be confusing, so extar care should be taken when operating on pairs/lists:\n")
 (printf "\t'(0 . (1 . 2)) -> ~s\n" pair0)
 (printf "\t'(0 . (1 . (2 . ()))) -> ~s\n" pair1)
+
+;; Naturally, lists of any sort can be nested
+(printf "Creating a nested list:\n")
+(printf "\t~s\n" (list (colorschemes) "lol" (list numbers)))
+(printf "If you wrap an identifier with \"quote\" you get output that looks like an identifier: ~s\n" (quote (colorschemes)))

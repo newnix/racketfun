@@ -2,7 +2,7 @@
 
 include ../Makefile
 
-TARGETS += ch2
+TARGETS += ch2 ch2-bin ch2-profile ch2-xtime
 BINDIR = ./bin
 
 ch2: ch2${SOURCEXT}
