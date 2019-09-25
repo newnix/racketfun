@@ -51,6 +51,7 @@
 (printf "(integer->char 65) -> ~s\n" (integer->char 65))
 (printf "(char->integer A) -> ~s\n" (char->integer #\A))
 ;; This is probably supposed to be lambda, but the codepoint doesn't seems right
+(printf "#\\u03BB should be a lambda, if it's not, then the font or locale isn't doing something correctly\n")
 (printf "#\\u03BB -> ~s\n" #\u03BB)
 
 ;; There are several available procedures for doing tests and transformations
@@ -69,3 +70,56 @@
 (printf "(char-ci=? #\\a #\\A) -> ~s\n" (char-ci=? #\a #\A))
 (printf "(eqv? #\\a (char-downcase #\\A)) -> ~s\n" (eqv? #\a (char-downcase #\A)))
 (printf "(eqv? #\\a #\\A) -> ~s\n" (eqv? #\a #\A))
+
+;; 3.4 Strinngs (Unicode)
+;; A string is a fixed-length array of characters. They're printed using double quotes (")
+;; where any double quote and backslash characters are escaped with backslashes.
+;; There are some similarities to C escape codes such as \n and \r being linefeed and 
+;; carriage return, while octal escapes are \[0-7]{1,3} and hex is \u[0-9A-F]{1,4},
+;; unprintable characters are typically printed as their hex values with the \u escape sequence
+(printf "\nThe (display s) procedure prints the contents of a string:\n")
+(printf "(display \"string\") :\n")
+(display "string")
+
+;; A stirng can be either mutable or immutable,
+;; a string literal is immutable, but most other strings are mutable
+;; the make-string procedure creates a mutable string of a given length with 
+;; an optional fill character
+(printf "(make-string 5 #\\.) -> ~s\n" (make-string 5 #\.))
+;; This is necessary as the new string is not returned from string-set!
+(printf "NOTE: the \"->\" in these printouts are for results-in, not return value!\n")
+(define s (make-string 5 #\.))
+(string-set! s 2 #\0)
+(printf "(stirng-set! (make-string 5 #\\.) 2 #\\0) -> ~s\n" s)
+(printf "String ordering and case operations are locale-independant, though some, like upcase, can vary with locale\n")
+(printf "(string<? \"apple\" \"Banana\") -> ~s\n" (string<? "apple" "Banana"))
+(printf "(string-ci<? \"apple\" \"Banana\") -> ~s\n" (string-ci<? "apple" "Banana"))
+
+;; 3.5 Bytes and Byte strings 
+;; A byte is an 8-bit integer capable of representing the 256 values between 0 and 255
+;; the byte? predicate will recognize numbers that represent valid bytes.
+(printf "\nNow on to 3.5: Bytes and Byte strings!\n")
+(printf "(byte? 255) -> ~s\n" (byte? 255))
+(printf "(bytes-ref #\"Apple\" 0) -> ~s\n" (bytes-ref #"Apple" 0))
+(printf "(make-bytes 3 65) -> ~s\n" (make-bytes 3 65))
+(define b (make-bytes 2 0))
+(printf "Creating mutable byte string 'b' with (make-bytes 2 0) -> ~s\n" b)
+(bytes-set! b 0 1)
+(printf "(bytes-set! b 0 1) -> ~s\n" b)
+(bytes-set! b 1 255)
+(printf "(bytes-set! b 1 255) -> ~s\n" b)
+(printf "The following should print a lambda as encoded by UTF-8\n")
+(printf "(bytes->string/utf-8 #\"\\316\\273\") -> ~s\n" (bytes->string/utf-8 #"\316\273"))
+(printf "This is the same byte string encoded using the latin-1 codepage\n")
+(printf "(bytes->string/latin-1 #\"\\316\\273\") -> ~s\n" (bytes->string/latin-1 #"\316\273"))
+;; This will switch the code page over to Greek temporarily
+(printf "The following block will attempt to print lambda using the greek code page\n")
+(let ([cvt (bytes-open-converter "cp1253" ; the Greek code page
+																 "UTF-8")]
+			[dest (make-bytes 2)]) ; creates an empty, mutable, 2-byte string
+	(bytes-convert cvt #"\353" 0 1 dest)
+	(bytes-close-converter cvt)
+	(bytes->string/utf-8 dest))
+
+;; 3.6 Symbols:
+;;
