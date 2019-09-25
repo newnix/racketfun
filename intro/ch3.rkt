@@ -122,4 +122,27 @@
 	(bytes->string/utf-8 dest))
 
 ;; 3.6 Symbols:
-;;
+;; A symbol is an atomic value that prints like an identifier preceeded with '.
+;; an expression that starts with ' and continues with an identifier produces a symbol value
+(printf "\nStarting 3.6: Symbols\n")
+(printf "(symbol? \'a) -> ~s\n" (symbol? 'a))
+(printf "symbols are case-sensitive:\n")
+(printf "\t(eq? \'a \'a) -> ~s\n" (eq? 'a 'a))
+(printf "\t(eq? \'a \'A) -> ~s\n" (eq? 'a 'A))
+(printf "Any string can be supplied to string->symbol to get the corresponding symbol\n")
+(printf "(eq? \'a (string->symbol \"a\")) -> ~s\n" (eq? 'a (string->symbol "a")))
+(printf "(string->symbol \"one, two\") -> ~s\n" (string->symbol "one, two"))
+(printf "The (write s) function prints a symbol without the \' prefix:\n\t")
+(write 'Apple)
+(write '|6|)
+(printf "\nThe (display s) form is the same as the corresponding string\n\t")
+(display 'Apple)
+(display '|6|)
+(printf "And neither include a newline in the output by default!\n")
+(printf "\nThe (gensym) and string->uninterned-symbol functions generate new, uninterned symbols\n")
+(printf "that are not equal to any previous symbol, interned or uninterned.\n")
+(printf "Uninterned symbols are then useful as fresh tags that cannot be confused with any other value\n\n")
+(define us (gensym))
+(printf "Defining a new symbol \"us\" as ~s: (expecting \'g80)\n\t" us)
+(printf "(eq? us \'g80) -> ~s\n" (eq? us 'g80))
+(printf "\t(eq? \'a (string->uninterned-symbol \"a\")) -> ~s\n" (eq? 'a (string->uninterned-symbol "a")))
