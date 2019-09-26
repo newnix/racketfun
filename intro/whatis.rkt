@@ -1,5 +1,6 @@
 #lang racket
 
+(provide whatis)
 ;; Create a simple filter function to identify the type of a given argument
 ;; only really useful in the repl
 (define (whatis i)
@@ -16,4 +17,7 @@
 		[(procedure? i) (id "procedure")]
 		[(vector? i) (id "vector")]
 		[(byte? i) (id "byte")]
+		;; If the argument is a list, it is also a pair
+		[(list? i) (id "list")]
+		[(pair? i) (id "pair")]
 		))

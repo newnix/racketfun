@@ -1,5 +1,7 @@
 #lang racket
 ;; Begin chapter 3, exploring build-in data types
+;; Include the whatis procedure for additional introspection
+(require "whatis.rkt")
 
 ;; 3.1: Booleans
 (printf "One of the primitive types in Racket is booleans (true/false):\n")
@@ -166,3 +168,29 @@
 										 #:exists 'replace)
 
 ;; 3.8 Lists and Pairs:
+;; A pair joins any two arbitrary values. The cons procedure constructs pairs and the
+;; car and cdr procedures extract the first and second elements respectively. The pair? predicate 
+;; returns true when provided with a pair
+(define tpair (cons (cons 1 2) 3))
+(printf "\nStarting 3.8 examples with pairs and lists:\n")
+(printf "(cons 1 2) -> ~s\n" (cons 1 2))
+(printf "Creating tpair: ~s\n" tpair)
+(printf "(cons (cons 1 2) 3) -> ~s\n" (cons (cons 1 2) 3))
+(printf "(whatis tpair) -> ") (whatis tpair)
+;; A list is a combination of pairs that creates a linked list.
+;; More precisely a list is either the empty list null, or a pair whose 
+;; first elemenet is a list element and whose second element is a list.
+;; The list? predicate will recognize the null or empty list as a list.
+(printf "null -> ~s\n" null)
+(whatis null)
+(define tlist (cons 0 (cons 1 (cons 2 null))))
+(printf "Creating tlist: ~s\n" tlist)
+(printf "(list? tlist) -> ~s\n" (list? tlist))
+(printf "(pair? tlist) -> ~s\n" (pair? tlist))
+(whatis tlist)
+(printf "(list? (cons 1 2)) -> ~s\n" (list? (cons 1 2)))
+(whatis (cons 1 2))
+;; A list or pair prints using list or cons when one of its elements cannot be written as a 
+;; quoted value. For example, a value constructed with srcloc cannot be written with quote
+;; and such prints using srcloc:
+(srcloc "ch3.rkt" 1 0 1 (+ 4 4))
