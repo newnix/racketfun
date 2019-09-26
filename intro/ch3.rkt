@@ -146,3 +146,23 @@
 (printf "Defining a new symbol \"us\" as ~s: (expecting \'g80)\n\t" us)
 (printf "(eq? us \'g80) -> ~s\n" (eq? us 'g80))
 (printf "\t(eq? \'a (string->uninterned-symbol \"a\")) -> ~s\n" (eq? 'a (string->uninterned-symbol "a")))
+
+;; 3.7 Keywords:
+;; A keyword value is similar to a symbol, but its printed form is prefixed with a #
+(printf "\nKeywords:\n")
+(printf "(string->keyword \"apple\") -> ~s\n" (string->keyword "apple"))
+(printf "(eq? \'#:apple (string->keyword \"apple\")) -> ~s\n" (eq? '#:apple (string->keyword "apple")))
+;; A keyword is identical to an identifier, but when quoted produces a value. Unlike an identifier 
+;; which when quoted produces a symbol
+;; An example of how they're different:
+(printf "Defining a path identifier, dir, which exemplifies the difference between symbols and keywords\n")
+(define dir (find-system-path 'temp-dir)) ; not '#:temp-dir
+(printf "Writing to a file named ~s\n" (build-path dir "stuff.txt"))
+(with-output-to-file (build-path dir "stuff.txt")
+										 (lambda () (printf "example\n"))
+										 ; optional #:mode argument can be 'text or 'binary
+										 #:mode 'text
+										 ; optional #:exists argument can be 'replace, 'truncate, ...
+										 #:exists 'replace)
+
+;; 3.8 Lists and Pairs:
