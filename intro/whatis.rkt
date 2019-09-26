@@ -7,17 +7,18 @@
 	; define an internal function for printing variables with a given type string
 	(define (id v)
 		(if (string? v)
-				(printf "\"~a\" is a(n) ~a\n" i v)
+				(printf "\"~a\" is ~a\n" i v)
 				(printf "~s is not a string!\n" (quote v))))
 	(cond
-		[(integer? i) (id "integer")]
-		[(boolean? i) (id "boolean")]
-		[(string? i) (id "string")]
-		[(identifier? i) (id "identifier")]
-		[(procedure? i) (id "procedure")]
-		[(vector? i) (id "vector")]
-		[(byte? i) (id "byte")]
+		[(null? i) (id "NULL")]
+		[(integer? i) (id "an integer")]
+		[(boolean? i) (id "a boolean")]
+		[(string? i) (id "a string")]
+		[(identifier? i) (id "an identifier")]
+		[(procedure? i) (id "a procedure")]
+		[(vector? i) (id "a vector")]
+		[(byte? i) (id "a byte")]
 		;; If the argument is a list, it is also a pair
-		[(list? i) (id "list")]
-		[(pair? i) (id "pair")]
+		[(list? i) (id "a list")]
+		[(pair? i) (id "a pair")]
 		))
