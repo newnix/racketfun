@@ -193,4 +193,33 @@
 ;; A list or pair prints using list or cons when one of its elements cannot be written as a 
 ;; quoted value. For example, a value constructed with srcloc cannot be written with quote
 ;; and such prints using srcloc:
+(printf "What follows are some examples of constracts that are unable to be written using quote\n")
 (srcloc "ch3.rkt" 1 0 1 (+ 4 4))
+(list 'here (srcloc "ch3.rkt" #f #f #f #f) 'there)
+(cons 1 (srcloc "ch3.rkt" 1 0 1 8))
+(cons 1 (cons 2 (srcloc "ch3.rkt" 1 0 1 8)))
+(printf "srcloc results: ~s\n" (srcloc->string (srcloc "ch3.rkt" 200 #f #f #f)))
+(printf "\nThere are no differences between (display v) and (write v) when it comes to lists and pairs other than printing the elements\n")
+(printf "(write (cons 1 2)) -> ~s\n" (write (cons 1 2)))
+(printf "(display (cons 1 2)) -> ~s\n" (display (cons 1 2)))
+(printf "(write null) -> ~s\n" (write null))
+(printf "(display null) -> ~s\n" (display null))
+(printf "(write (list 1 2 \"3\")) -> ~s\n" (write (list 1 2 "3")))
+(printf "(display (list 1 2 \"3\")) -> ~s\n" (display (list 1 2 "3")))
+;; Among the most important predefined procedures that operate on lists 
+;; aro those that iterate through a list's elements:
+(printf "Some of the most important list procedures are those that iterate over the elements:\n")
+(define lst '(1 2 3 4 5))
+(printf "Using the list lst (~s) for demonstration:\n" lst)
+(whatis lst)
+(printf "\n(map (lambda (i) (/ 1 i)) lst) -> ~s\n" (map (lambda (i) (/ 1 i)) lst))
+(printf "\nNOTE: The expression (< i 3) is equivalent to the infix notation of (i . < . 3)\n")
+(printf "(andmap (lambda (i) (< i 3)) lst) -> ~s\n" (andmap (lambda (i) (< i 3)) lst))
+(printf "(ormap (lambda (i) (< i 3)) lst) -> ~s\n" (ormap (lambda (i) (< i 3)) lst))
+(printf "(filter (lambda (i) (< i 3)) lst) -> ~s\n" (filter (lambda (i) (< i 3)) lst))
+(printf "(foldl (lambda (v i) (+ v i)) 10 lst) -> ~s\n" (foldl (lambda (v i) (+ v i)) 10 lst))
+(printf "\nNOTE: Due to how (display i) works, this line will not print as intended\n")
+(printf "(for-each (lambda (i) (display i)) lst) -> ~s\n" (for-each (lambda (i) (display i)) lst))
+(printf "(member 3 lst) -> ~s\n" (member 3 lst))
+(printf "(assoc \'where \'((when \"3:30\") (where \"Florida\") (who \"Mickey\"))) -> ~s\n" 
+				(assoc 'where '((when "3:30") (where "Florida") (who "Mickey"))))
