@@ -223,3 +223,31 @@
 (printf "(member 3 lst) -> ~s\n" (member 3 lst))
 (printf "(assoc \'where \'((when \"3:30\") (where \"Florida\") (who \"Mickey\"))) -> ~s\n" 
 				(assoc 'where '((when "3:30") (where "Florida") (who "Mickey"))))
+;; Pairs are immutable by default, use mcons to construct them with mutability
+(printf "\nContrary to Lisp tradition, pairs in Racket are immutable.\n")
+(printf "The pair? and list? predicates only recognize these immutable data types,\n")
+(printf "to create a mutable pair, use (mcons i v) and test with the mpair? predicate.\n")
+(define mp (mcons 1 2))
+(printf "(define mp (mcons 1 2)) -> ~s\n" mp)
+(whatis mp)
+(printf "(pair? mp) -> ~s\n" (pair? mp))
+(printf "(mpair? mp) -> ~s\n" (mpair? mp))
+(printf "(set-mcar! mp 0) -> ")
+(set-mcar! mp 0)
+(printf "~s\n" mp)
+
+;; 3.9 Vectors:
+;; A vector is a fixed length array of arbitrary values. Unlike a list, a vector
+;; supports constant-time access and update of its elements.
+;; A vector prints similarly to a list, but with '#(...) rather than '(...)
+;; alternatively using vector if an element cannot be directly expressed.
+(printf "\nVectors:\n")
+(define myvec #("test" "vector" "setup"))
+(printf "(define myvec #(\"test\" \"vector\" \"setup\") -> ~s\n" myvec)
+(printf "(vector? myvect) -> ~s\n" (vector? myvec))
+(printf "Some of the same list functions are available to vectors:\n")
+(printf "(vector-ref myvec 1) -> ~s\n" (vector-ref myvec 1))
+(printf "(list->vector (map string-titlecase (vector->list myvec))) -> ")
+(list->vector (map string-titlecase
+									 (vector->list myvec)))
+(printf "\n")

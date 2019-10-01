@@ -18,7 +18,10 @@
 		[(procedure? i) (id "a procedure")]
 		[(vector? i) (id "a vector")]
 		[(byte? i) (id "a byte")]
+		;; test for mutability first
+		[(mpair? i) (id "a mutable pair")]
 		;; If the argument is a list, it is also a pair
 		[(list? i) (id "a list")]
 		[(pair? i) (id "a pair")]
+		[(vector? i) (id "a vector")]
 		))
