@@ -24,4 +24,9 @@
 		[(list? i) (id "a list")]
 		[(pair? i) (id "a pair")]
 		[(vector? i) (id "a vector")]
+		[(hash? i) (id "a hash table")]
+		[(box? i) (id "a box")]
+		[(void? i) (id "void")]
+		;; Default to reporting unknown types
+		(id "not a known type")
 		))

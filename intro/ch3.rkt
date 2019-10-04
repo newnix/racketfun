@@ -251,3 +251,74 @@
 (list->vector (map string-titlecase
 									 (vector->list myvec)))
 (printf "\n")
+
+;; 3.10 Hash Tables
+;; A hash table implements a mapping from keys to values where both 
+;; keys and values are arbitrary Racket values, and access/update operations 
+;; are typically constant time.
+;; Keys are compared using equal? eqv? or eq? depending on if the hash table is created
+;; with make-hash, make-hasheqv, or make-hasheq.
+(printf "\n3.10: Hash Tables\n")
+(define ht (make-hash))
+(printf "Created example hash table \"ht\"\n")
+(hash-set! ht "apple" '(red round))
+(hash-set! ht "banana" '(yellow long))
+(printf "(hash-ref ht \"apple\") -> ~s\n" (hash-ref ht "apple"))
+(printf "(hash-ref ht \"coconut\" \"nonexistent\") -> ~s\n" (hash-ref ht "coconut" "nonexistent"))
+;; Hash tables default to being constructed as immutable entities with the provided set of keys and values
+;; which can be extended with hash-set, producing a new entry in the table
+(whatis ht)
+(printf "Mutable hash tables are considered \"weak\" and defined as such:\n")
+(printf "\t(define wht (make-weak-hasheq))\n")
+(define wht (make-weak-hasheq))
+(whatis wht)
+(printf "(hash-set! wht (gensym) \"can you see me?\") -> ")
+(hash-set! wht (gensym) "can you see me?")
+(printf "~s\n" (quote wht))
+(printf "(hash-count wht) -> ~s\n" (hash-count wht))
+(printf "Running GC pass...\n")
+(collect-garbage)
+(printf "(hash-count wht) -> ~s\n" (hash-count wht))
+;; However, this could still have a strongly bound value in the hash table,
+;; so long as the corresponding key is accessible, creating a catch-22 when trying to 
+;; clear the entries in a GC pass.
+;; This can be worked around by binding the key to an ephemeron
+(printf "Now demonstrating a way to use an ephemeron to clean a weak hash table:\n")
+(printf "(define eht (make-weak-hasheq))\n")
+(define eht (make-weak-hasheq))
+(let ([g (gensym)])
+	(hash-set! eht g (list g)))
+(collect-garbage)
+(printf "(let ([g (gensym)])\n\t(hash-set! eht g (list g)))\n\t(collect-garbage)\n(hash-count eht) -> ~s\n"(hash-count eht))
+(printf "\nNow using an ephemeron:\n")
+(define eht2 (make-weak-hasheq))
+(let ([g (gensym)])
+	(hash-set! eht2 g (make-ephemeron g (list g))))
+(collect-garbage)
+
+(printf "(define eht2 (make-weak-hasheq))\n(let ([g (gensym)])\n\t(hash-set! eht2 g (make-ephemeron g (list g))))\n(collect-garbage)\n(hash-count eht2) -> ~s\n" (hash-count eht2))
+
+;; 3.11 Boxes:
+;; A box is like a single element vector. It can print as a quoted #&
+;; followed by the printed form of the boxed value, a literal #&
+;; can also be used as an expression, but it has little to no use
+;; as the resulting box would be a constant.
+(define bx (box "apple"))
+(printf "\nNow see boxes:\n\n(define bx (box \"apple\"))\n")
+(whatis bx)
+(printf "(unbox bx) -> ~s\n" (unbox bx))
+(printf "(set-box! bx '(banana gram))\n")
+(set-box! bx '(banana gram))
+(whatis bx)
+
+;; 3.12 Void and Undefined
+;; Some procedures and expressions have no real need for a result value. 
+;; For example, (display v) is called purely for its side-effect of writing output.
+;; In such cases the result value is normally a constant that prints as #<void>.
+;; The REPL would not print anything in such a case.
+(printf "\nFun with #<void>\n")
+(void)
+(void 1 2 3)
+(whatis (list (void)))
+(void? (void))
+(whatis (void))
