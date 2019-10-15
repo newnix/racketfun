@@ -1,4 +1,5 @@
 #lang racket
+(require "whatis.rkt")
 
 ; This is simply copying Racket documentation on simple
 ; definitions and expressions, being used as a means to help solidify 

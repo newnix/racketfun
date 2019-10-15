@@ -71,3 +71,45 @@
 (printf "the scope of the 'x' binding is \"(let ([y 5]) (+ x y))\"; and the scope of the 'y'\n")
 (printf "binding is just \"(+ x y)\". The environment of \"(+ x y)\" includes binding for\n")
 (printf "'y', 'x', and 'f', as well as everything in racket.\n\n")
+(printf "A module-level define can bind ony identifiers that aren't already defined or required\n")
+(printf "into the module. A local define or other binding forms, however, can give a new local\n")
+(printf "binding for an identifier that already has a binding; such a binding shadows the existing binding\n")
+(printf "EX:\n\n")
+;; Define the necessary function for the example printout
+(define f2
+	(lambda (append)
+		(define cons (append "ugly" "confusing"))
+		(let ([append 'this-was])
+			(list append cons))))
+;; Replaced the tab escape characters (\t) with two spaces to better display in output
+(printf "(define f2\n  (lambda (append)\n    (define cons (append \"ugly\" \"confusing\"))\n    ")
+(printf "(let ([append \'this-was])\n      (list append cons))))\n\n(f2 list) -> ~s\n\n" (f2 list))
+(printf "Similarly, a module-level define can shadow a binding from the module's language. For example\n")
+(printf "(define cons 1) in a racket module shadows the cons definition that is provided by racket.\n")
+(printf "Intentionally shadowing a language binding is rarely a good idea, especially for widely used bindings lke cons\n")
+(printf "but shadowing relieves a programmer from having to avoid every binding provided by the language.\n\n")
+
+;; 4.3 Function Calls (Procedure Applications)
+(printf "An expression of the form: (proc-expr arg-expr ...)\n")
+(printf "is a function call--also known as a procedure application--when proc-expr is not an\n")
+(printf "identifier that is bound as a syntax transformer (such as if or define).\n")
+
+;; 4.3.1 Evaluation Order and Arity
+(printf "A function call is evaluated by first evaluating the proc-expr and all the arg-exprs in order\n")
+(printf "(left to right). Then, if proc-expr produces a function that accepts as many arguments as \n")
+(printf "supplied arg-exprs, the function is called. Otherwise, an exception is raised.\n")
+(printf "EX:\n\n")
+(printf "\t(cons 1 null) -> ~s\n" (cons 1 null))
+(printf "\t(+ 1 2 3) -> ~s\n" (+ 1 2 3))
+(printf "\nHowever, the following would throw an arity mismatch:\n\t")
+(printf "(cons 1 2 3)\n")
+(printf "\nWhile this will throw an exception about not being a procedure:\n\t")
+(printf "(1 2 3)\n\n")
+(printf "Some functions, such as cons, accept a fixed number of arguments. Some, such as + or list,\n")
+(printf "accept any number of arguments. Still others accept a range of argument counts;\n")
+(printf "for example substring accepts either two or three arguments.\n")
+(printf "A functions arity is the number of arguments that it accepts.\n")
+
+;; 4.3.2 Keyword Arguments
+(printf "\nSome functions accept keyword arguments in addition to positional arguments. For\n")
+(printf "that case, an arg can be an arg-keyword arg-expr sequence instead of just arg-expr:\n")
