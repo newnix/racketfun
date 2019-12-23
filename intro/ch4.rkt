@@ -113,3 +113,20 @@
 ;; 4.3.2 Keyword Arguments
 (printf "\nSome functions accept keyword arguments in addition to positional arguments. For\n")
 (printf "that case, an arg can be an arg-keyword arg-expr sequence instead of just arg-expr:\n")
+(printf "\t(go \"super.rkt\" #:mode \'fast)\n\n")
+(printf "Calls the function bound to `go` with \"super.rkt\" as a positional argument and \n")
+(printf "\'fast as an argument associated with the \"#:mode\" keyword. A keyword is implicitly\n")
+(printf "paired with the expression that follows it.\n\n")
+(printf "Since a keyword itself is not an expression, the following is a syntax error:\n\t")
+(printf "(go \"super.rkt\" #:mode #:fast)\n\n")
+(printf "The \"#:mode\" keyword must be followed by an expression to produce an argument value,\n")
+(printf "and \"#:fast\" is not an expression, it is another keyword.\n\n")
+(printf "The order of keyword args determines the order in which arg-exprs are evaluated, but a\n")
+(printf "function accepts keyword arguments independant of their position in the argument list.\n")
+(printf "Thus, the first example is equivalent to:\n\t(go #:mode \' \"super.rkt\")\n\n")
+
+;; 4.3.3 The `apply` Function
+(printf "The syntax for function calls suppors any number of arguments, but a specific call always\n")
+(printf "specifies a fixed number of arguments. As a result, a function that takes a list of arguments\n")
+(printf "cannot directly apply a functon like `+` to all the items in a list:\n\t")
+(printf "(define (avg lst) ; Won't work\n\t  (/ (+ lst) (length lst)))\n\n")
