@@ -27,6 +27,24 @@
 	(if (not (empty? lst))
 			(lp lst)
 			(printf "Given empty list!\n")))
+
+;; Could probably use keywords to make these both a single function
+(define (lprint lst)
+	(define (lp lst)
+		(cond
+			[(empty? lst) lst]
+			[else
+				(if (string? (first lst))
+						(printf "~a" (first lst))
+						(printf "\n"))
+				(if (not (empty? (rest lst)))
+						(lp (rest lst))
+						(printf "\n"))
+				]))
+	(if (not (empty? lst))
+			(lp lst)
+			(printf "Given empty list!\n")))
+
 (plst '("id stands in for an identifier such as \'x\' or \'spiderman\'" 
 				"keyword stands in for a keyword such as \'#:tag\'"
 				"expr stands in for any sub form, and is evaluated as an expression"
@@ -108,10 +126,11 @@
 (printf "Some functions, such as cons, accept a fixed number of arguments. Some, such as + or list,\n")
 (printf "accept any number of arguments. Still others accept a range of argument counts;\n")
 (printf "for example substring accepts either two or three arguments.\n")
-(printf "A functions arity is the number of arguments that it accepts.\n")
+(printf "A functions arity is the number of arguments that it accepts.\n\n")
 
 ;; 4.3.2 Keyword Arguments
-(printf "\nSome functions accept keyword arguments in addition to positional arguments. For\n")
+(printf "4.3.2: Keyword Arguments\n")
+(printf "Some functions accept keyword arguments in addition to positional arguments. For\n")
 (printf "that case, an arg can be an arg-keyword arg-expr sequence instead of just arg-expr:\n")
 (printf "\t(go \"super.rkt\" #:mode \'fast)\n\n")
 (printf "Calls the function bound to `go` with \"super.rkt\" as a positional argument and \n")
@@ -126,7 +145,38 @@
 (printf "Thus, the first example is equivalent to:\n\t(go #:mode \' \"super.rkt\")\n\n")
 
 ;; 4.3.3 The `apply` Function
+(printf "4.3.3: The `apply` Function\n")
 (printf "The syntax for function calls suppors any number of arguments, but a specific call always\n")
 (printf "specifies a fixed number of arguments. As a result, a function that takes a list of arguments\n")
 (printf "cannot directly apply a functon like `+` to all the items in a list:\n\t")
 (printf "(define (avg lst) ; Won't work\n\t  (/ (+ lst) (length lst)))\n\n")
+(printf "The above results in a contract violation as the \"+\" function cannot operate on all the values of the list\n")
+(printf "without some other operation to only provide compatible data from the list (i.e. given a list '(1 2 3 4)\n")
+(printf "iterate over the values such that you're only ever comparing the numeric values in the list)")
+(printf "\n\t(define (avg lst) ; won't always work...\n\t")
+(printf "  (/ (+ (list-ref lst 0) (list-ref lst 1) (list-ref lst 2))\n\t    (length lst)))\n\n")
+(printf "This solution has an obvious flaw in that it can only fit at most 3 values in the argument list.\n")
+(printf "\nThe `apply` function allows us a way around this restriction, it takes a function and a list\n")
+(printf "argument, then applies the function to the values in the list:\n")
+(lprint
+	'("\t(define (avg lst)\n\t  (/ (apply + lst) (length lst)))\n\n"))
+(lprint
+	'("As a convenience, the `apply` function accepts additional arguments between the function\n"
+		"and the list. The additional arguments are effectively `cons`'d onto the argument list:\n"
+		"\t(define (anti-sum lst)\n\t  (apply - 0 lst))\n\n"
+		"\t(anti-sum '(1 2 3)) -> -6\n"))
+(lprint
+	'("The `apply` function accepts keyword arguments as well and it passes them along to the called function:\n\t"
+		"(apply go #:mode 'fast '(\"super.rkt\"))\n\t(appy go '(\"super.rkt\") #:mode 'fast)\n\n"
+		"Keywords that are included in `apply`'s argument list do not count as keyword arguments for the\n"
+		"called function; instead all arguments in the list are trteated as positional arguments.\n"
+		"To pass a list of keyword arguments to a function, use the `keyword-appy` function which accepts\n"
+		"a function to apply and three lists. The fist two lists are in parallel, where the first list\n"
+		"contains keywords (as sorted by `keyword<?`), and the second list containes the corresponding argument\n"
+		"for each keyword. The third list is the positional function arguments, same as with `apply`.\n\n"))
+
+;; 4.4 Functions (Procedures): lambda
+(lprint
+	'("4.4: Functions: lamda\n"
+		"A lambda expression creates a function. In the simplest case, a lambda expression has the form:\n\t"
+		"(lambda (arg-id ...)\n\t  body ...+)\n\n"))
