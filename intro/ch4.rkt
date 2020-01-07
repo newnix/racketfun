@@ -180,3 +180,52 @@
 	'("4.4: Functions: lamda\n"
 		"A lambda expression creates a function. In the simplest case, a lambda expression has the form:\n\t"
 		"(lambda (arg-id ...)\n\t  body ...+)\n\n"))
+(lprint
+	'("A lambda form with n `arg-ids` accepts n arguments:\n"
+		"\t((lambda (x) x) 1) -> 1\n\n"
+		"\t((lambda (x y) (+ x y)) 1 2) -> 3\n\n"
+		"\t((lambda (x y) (+ x y)) 1) -> ERROR: Arity mismatch\n\n"))
+(lprint
+	'("A lambda expression can also have the form:\n"
+		"(lambda rest-id\n  body ...+)\n\n"
+		"That is, a lambda expression can have a single rest-id that is not surreounded by parentheses.\n"
+		"The resulting function accepts any number of arguments and the arguments are put into a\n"
+		"list bound to rest-id.\n"
+		"For example:\n\t((lambda x x) 1 2 3) -> '(1 2 3)\n\n\t"
+		"((lambda x x)) -> '()\n\n\t"
+		"((lambda x (car x)) 1 2 3) -> 1\n\n"))
+(lprint
+	'("Functionsn with a rest-id often use `apply` to call another function that accepts any number of arguments.\n"
+		"Ex:\n\t(define max-mag\n\t  (lambda nums\n\t    (apply max (map magnitude nums))))\n\n"
+		"\t(max 1 -2 0) -> 1\n\n\t(max-mag 1 -2 0) -> 2\n\n"))
+(lprint
+	'("The lambda form also supports required arguments combined with a rest-id:\n\t"
+		"(lambda (arg-id ..+ . rest-id)\n\t  body ...+)\n\n"
+		"The result of this form is a function that requires at lesat as many arguments as arg-ids.\n"
+		"For example:\n\t(define max-mag\n\t  (lambda (num . nums)\n\t    (apply max (map magnitude (cons num nums))))\n\n"
+		"\t(max-mag 1 -2 0) -> 2\n\t(max-mag) -> ERROR: Arity mismatch\n\n"
+		"The last invokation fails because at least one argument is expected by the function signature.\n"
+		"A rest-id variable is sometimes called a \"rest argument\" because it accepts the rest of the function args.\n"))
+
+;; 4.4.2 Declaring Optional Arguments
+(lprint
+	'("4.4.2: Declaring Optional Arguments:\n"
+		"Instead of just an identifier, an argument (other than a rest argument) in a lambda form\n"
+		"can be specified with an identifier and default value:\n\t"
+		"(lambda gen-formals\n\t  body ...+)\n\n\t"
+		"gen-formals = (arg ...)\n\t"
+		"            | rest-id\n\t"
+		"            | (arg ...+ . rest-id)\n\n\t"
+		"        arg = arg-id\n\t"
+		"            | [arg-id default-expr]\n\n"
+		"An argument of the form [arg-id default-expr] is optional. When the argument is not supplied by the caller\n"
+		"the value is taken from `default-expr`. The default-expr can refer to any preceeding arg-id, and\n"
+		"every following arg-id must have a default as well.\nFor example:\n\t"
+		"(define greet\n\t  (lambda (given [surname \"Smith\"])\n\t    (string-append \"Hello, \" given \" \" surname)))\n\n"
+		"\t(greet \"John\") -> \"Hello, John Smith\"\n\t"
+		"(greet \"John\" \"Doe\") -> \"Hello, John Doe\n\n"
+		"\t(define greet\n\t  (lambda (given [surname (if (equal? given \"John\")\n"
+		"\t\t\t\t\"Doe\"\n\t\t\t\t\"Smith\")])\n\t  "
+		"(string-append \"Hello, \" given \" \" surname)))\n\n"
+		"\t(greet \"John\") - > \"Hello, John Doe\"\n\t"
+		"(greet \"Adam\") -> \"Hello, Adam Smith\"\n\n"))
