@@ -229,3 +229,53 @@
 		"(string-append \"Hello, \" given \" \" surname)))\n\n"
 		"\t(greet \"John\") - > \"Hello, John Doe\"\n\t"
 		"(greet \"Adam\") -> \"Hello, Adam Smith\"\n\n"))
+
+;; 4.4.3 Declaring Keyword Arguments
+(lprint
+	'("4.4.3 Declaring Keyword Arguments:\n"
+		"A lambda form can declare an argument to be passed by keyword, rather than by position.\n"
+		"Keyword arguments can be mixed with positional arguments, and default-value expressions can be used with both:\n"
+		"\t(lambda gen-formals\n\t  body ...+)\n\n"
+		"\tgen-formals = (arg ...)\n"
+		"\t            | rest-id\n"
+		"\t            | (arg ...+ . rest-id)\n\n"
+		"\t        arg = arg-id\n"
+		"\t            | [arg-id default-expr]\n"
+		"\t            | arg-keyword arg-id\n"
+		"\t            | arg-keyword [arg-id default-expr]\n\n"
+		"An argument specified as `arg-keyword arg-id` is supplied by an application use thing same `arg-keyword`.\n"
+		"The position of the keyword-identifier pair in the argument list does not matter for matching with\n"
+		"arguments in an application, because it will be matched to an argument value by keyword rather than position.\n"
+		"See:\n\t"
+		"(define greet\n\t  (lambda (given #:last surname)\n\t"
+		"    (string-appnd \"Hello, \" given \" \" surname)))\n\n"
+		"\t(greet \"John\" #:last \"Smith\") -> \"Hello, John Smith\"\n"
+		"\t(greet #:last \"Doe\" \"John\") -> \"Hello, John Doe\"\n"))
+(define greet
+	(lambda (given #:last surname)
+		(string-append "Hello, " given " " surname)))
+(greet "John" #:last "Doe")
+(define greet2
+	(lambda (#:hi [hi "Hello"] given #:last [surname "Smith"])
+		(string-append hi ", " given " " surname)))
+(lprint
+	'("\nAn arg-keyword [arg-id default-expr] argument specifier as keyword-based argument with a default value.\n"
+		"e.g:\n\t(define greet\n\t  (lambda (#:hi [hi \"Hello\"] given #:list [surname \"Smith\"])\n\t"
+		"    (string-append hi \", \" given \" \" surname)))\n\t(greet \"John\") -> \"Hello, John Smith\"\n"
+		"\t(greet \"Karl\" #:last \"Marx\") -> \"Hello, Karl Marx\"\n"
+		"\t(greet \"John\" #:hi \"Howdy\") -> \"Howdy, John Smith\"\n\n"
+		"The lambda form does not directly support the creation of a function that accepts \"rest\"\n"
+		"keywords. To construct a function that accepts all keyword arguments, use\n"
+		"`make-keyword-procedure`. The function supplied to `make-keyword-procedure`\n"
+		"recieves keyword arguments through parallel lists in the first two positional arguments,\n"
+		"and then all remaining positional arguments are passed as the remaining arguments.\nE.g:\n\t"
+		"(define (trace-wrap f)\n\t  (make-keyword-procedure\n\t    (lambda (kws kw-args . rest)\n\t"
+		"      (printf \"Called with ~s ~s ~s\\n\" kws kw-args rest)\n\t"
+		"      (keyword-apply f kws kw-args rest))))\n\n"
+		"\t ((trace-wrap greet) \"John\" #:hi \"Howdy\"):\n"))
+(define (trace-wrap f)
+	(make-keyword-procedure
+		(lambda (kws kw-args . rest)
+			(printf "Called with ~s ~s ~s\n" kws kw-args rest)
+			(keyword-apply f kws kw-args rest))))
+((trace-wrap greet2) "John" #:hi "Howdy")
