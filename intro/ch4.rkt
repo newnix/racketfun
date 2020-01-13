@@ -279,3 +279,86 @@
 			(printf "Called with ~s ~s ~s\n" kws kw-args rest)
 			(keyword-apply f kws kw-args rest))))
 ((trace-wrap greet2) "John" #:hi "Howdy")
+
+;; 4.4.4 Arity-Sensitive Functions: `case-lambda`
+(lprint
+	'("\n4.4.4 Arity-Sensitive Functions: `case-lambda`\n"
+		"The `case-lambda` form creates a function that can have completely different behaviours\n"
+		"depending on the number of arguments that are supplied. A case-lambda expression has the form:\n\t"
+		"(case-lambda\n\t  [formals body ...+]\n\t  ...)\n\n\t"
+		"formals = (arg-id ...)\n\t"
+		"        |  rest-id\n\t"
+		"        |  (arg-id ...+ . rest-id)\n\n"
+		"where each `[formals body ...+]` is analagous to `(lambda formals body ...+).\n"
+		"Applying a function produced by `case-lambda` is like applying a lambda for the\n"
+		"first case that matches the nnumber of given arguments.\nExamples:\n\n"
+		"\t(define greet\n\t  (case-lambda\n\t"
+		"    [(name) (string-append \"Hello, \" name)]\n\t"
+		"    [(given surname) (string-append \"Hello, \" given \" \" surname)]))\n\n"
+		" (greet \"John\") -> \"Hello, John\"\n"
+		" (greet \"John\" \"Smith\") -> \"Hello, John Smith\"\n"
+		" (greet) -> Error: Arity mismatch\n\n"
+		"A `case-lambda` function cannot directly support optional or keyword arguments.\n"))
+(define arity-greet
+	(case-lambda
+		[(name) (string-append "Hello, " name)]
+		[(given surname) (string-append "Hello, " given " " surname)]))
+(arity-greet "John")
+(arity-greet "John" "Smith")
+
+;; 4.5 Definitions: `define`
+(lprint
+	'("\n\n4.5 Definitions: `define`\n"
+		"A basic definition has the form:\n\t(define id expr)\n\n"
+		"in which case `id` is bound to the result of `expr`.\n"))
+
+;; 4.5.1 Function Shorthand
+(lprint
+	'("\n4.5.1 Function Shorthand\n"
+		"The `define` form also supports a shorthand for function definitions:\n\t"
+		"(define (id arg ...) body ...+)\n\n"
+		"Which is shorthand for:\n\t(define id (lambda (arg ...) body ...+))\n\n"
+		"Examples:\n\t"
+		"(define (greet name)\n\t  (string-append salutation \", \" name))\n"
+		" (greet \"John\") -> \"Hi, John\"\n\n"
+		"\t(define (greet first [surname \"Smith\"] #:hi [hi salutation])\n\t"
+		"  (string-append hi \", \" first \" \" surname))\n\n"
+		" (greet \"John\") -> \"Hi, John Smith\"\n"
+		" (greet \"John\" #:hi \"Hey\") -> \"Hey, John Smith\"\n"
+		" (greet \"John\" \"Doe\") -> \"Hi, John Doe\"\n\n"
+		"The function shorthand via `define` also supports a `rest-argument'\n"
+		"(i.e., a final argument to collect extra arguments in a list:\n\t"
+		"(define (id arg ... . rest-id) body ...+)\n\n"
+		"which is a shorthand for:\n\t"
+		"(define id (lambda (arg ... . rest-id) body ...+))\n\n"
+		"For example:\n\t"
+		"(define (avg . l)\n\t  (/ (apply + l) (length l)))\n\n"
+		" (avg 1 2 3) -> 2\n\n"))
+
+(define (avg-func . l)
+	(/ (apply + l) (length l)))
+(printf "(avg 1 2 3 4 5 6) -> ")
+(avg-func 1 2 3 4 5 6)
+(printf "\n\n")
+
+;; 5.4.2 Curried Function Shorthand
+(lprint
+	'("5.4.2 Curried Function Shorthand\n"
+		"Consider the following `make-add-suffix` function that takes a string and returns another\n"
+		"function that takes a string:\n\t"
+		"(define make-add-suffix\n\t  (lambda (s2)\n\t    (lambda (s) (string-append s s2))))\n\n"
+		"Although it's not common, result of `make-add-suffix` could be called directly like so:\n\t"
+		"((make-add-suffix \"!\") \"hello\") -> \"hello!\"\n\n"
+		"In a sense, `make-add-suffix` is a function that takes two arguments, but it takes them\n"
+		"one at a time. A function that takes some of its arguments and returns a function to consume more\n"
+		" is sometimes called a curried function.\n"
+		"Using the function-shorthand form of define, `make-add-suffix` can be written equivalently as:\n\t"
+		"(define (make-add-suffix s2)\n\t  (lambda (s) (string-append s s2)))\n\n"
+		"This shorthand reflects the shape of the function call `(make-add-suffix \"!\")`.\n"
+		"The define form further supports a shorthand for defining curried functions that \n"
+		"reflects nested function calls:\n\t"
+		"(define ((make-add-suffix s2) s)\n\t  (string-append s s2))\n"
+		" ((make-add-suffix \"!\") \"hello\") -> \"hello!\"\n\n"))
+(define ((make-add-suffix s2) s)
+	(string-append s s2))
+((make-add-suffix "!") "hello")
