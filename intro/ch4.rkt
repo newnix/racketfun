@@ -341,9 +341,9 @@
 (avg-func 1 2 3 4 5 6)
 (printf "\n\n")
 
-;; 5.4.2 Curried Function Shorthand
+;; 4.5.2 Curried Function Shorthand
 (lprint
-	'("5.4.2 Curried Function Shorthand\n"
+	'("4.5.2 Curried Function Shorthand\n"
 		"Consider the following `make-add-suffix` function that takes a string and returns another\n"
 		"function that takes a string:\n\t"
 		"(define make-add-suffix\n\t  (lambda (s2)\n\t    (lambda (s) (string-append s s2))))\n\n"
@@ -362,3 +362,42 @@
 (define ((make-add-suffix s2) s)
 	(string-append s s2))
 ((make-add-suffix "!") "hello")
+
+;; 4.5.3 Multiple Values and `define-values`
+(lprint
+	'("\n4.5.3 Multiple Vlaues and `define-values`\n"
+		"A Racket expression normally produces a single result, but some expressions can\n"
+		"produce multiple results. For example, `quotient` and `remainder` each produce a single value,\n"
+		"but `quotient/remainder` produces the same two values at once:\n\t"))
+(display "(quotient 13 3) -> ")
+(quotient 13 3)
+(display "(remainder 13 3) -> ")
+(remainder 13 3)
+(display "(quotient/remainder 13 3) -> ")
+(quotient/remainder 13 3)
+
+(lprint
+	'("\nAs shown above, the REPL will print each result value on its own line.\n"
+		"Multiple-valued functions can be implemented in terms of the `values` function,\n"
+		"which takes any number of values and returns them as the results:\n\t"
+		" (values 1 2 3) \n"
+		" 1\n 2\n 3\n\n"
+		"\t(define (split-name name)\n\t  (let ([parts (regexp-split \" \" name)])\n\t"
+		"    (if (= (length parts) 2)\n\t      (values (list-ref parts 0) (list-ref parts 1))\n\t"
+		"      (error \"not a <first> <last> name\"))))\n\n"))
+(define (split-name name)
+	(let ([parts (regexp-split " " name)])
+		(if (= (length parts) 2)
+				(values (list-ref parts 0) (list-ref parts 1))
+				(error "not a <first> <last> name"))))
+(split-name "Adam Smith")
+(lprint
+	'("\nThe `define-values` form binds multiple identifiers at once to multiple results\n"
+		"produced from a single expression:\n\t"
+		"(define-values (id ...) expr)\n\n"
+		"The number of results produced by the `expr` must match the number of `id`s.\n"
+		"Examples:\n\t(define-values (given surname) (split-name \"Adam Smith\"))\n\n"))
+(define-values (given surname) (split-name "Adam Smith"))
+(printf "Given: ~v\n" given)
+(printf "Surname: ~v\n" surname)
+(printf "A define form (not functon shorthand) is equivalent to a single id `define-values` form.\n\n")
