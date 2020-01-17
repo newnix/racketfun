@@ -401,3 +401,29 @@
 (printf "Given: ~v\n" given)
 (printf "Surname: ~v\n" surname)
 (printf "A define form (not functon shorthand) is equivalent to a single id `define-values` form.\n\n")
+
+;; 4.5.4 Internal Definitions
+(lprint
+	'("4.5.4 Internal Definitions\n"
+		"When the grammar for a syntactic form specifies body, then the corresponding form can be\n"
+		"either a definition or an expression. A definition as a body is an internal definition.\n"
+		"Expressions and internal definitions in a body sequence can be mixed, so long as\n"
+		"the last body is an expression.\nFor example, the syntax of lambda is:\n\t"
+		"(lambda gen-formals\n\t  body ...+)\n\n"
+		"so the following are valid innstances of the grammar:\n\t"
+		"(lambda (f) \t; no definitions\n\t  (printf \"running\\n\")\n\t  (f 0))\n\n\t"
+		"(lambda (f) \t; one definition\n\t  (define (log-it what)\n\t    (printf \"~a\\n\" what))\n\t"
+		"  (log-it \"running\")\n\t  (f 0)\n\t  (log-it \"done\"))\n\n\t"
+		"(lambda (f n) \t; two definitions\n\t  (define (call n)\n\t    (if (sezo? n)\n\t"
+		"      (log-it \"done\")\n\t        (begin\n\t          (log-it \"running\")\n\t"
+		"          (f n)\n\t          (call (- n 1)))))\n\t  (define (log-it what)\n\t"
+		"    (printf \"~a\\n\" what))\n\t  (call n))\n\n"
+		"Internal definitions in a particular body sequence are mutually recursive; that is, any definition\n"
+		"can refer to any other definition -- as long as the reference isn't actually\n"
+		"evaluated before its definition takes place. If a definition is referenced too early, an error occurs.\n"
+		"EX:\n\t(define (weird)\n\t  (define x x)\n\t  x)\n\n"
+		"\t(weird) -> Error: x is undefined\n\n"
+		"A sequence of internal definitions using just `define` is easily translated into an\n"
+		"equivalent `letrec` form (intoduced in the upcoming section). However, other \n"
+		"definition forms can appear as a body, including `define-values`, `struct` (see Programmer-Defined Datatypes)\n"
+		"or even `define-syntax` (see Macros).\n"))
