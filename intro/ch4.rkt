@@ -427,3 +427,38 @@
 		"equivalent `letrec` form (intoduced in the upcoming section). However, other \n"
 		"definition forms can appear as a body, including `define-values`, `struct` (see Programmer-Defined Datatypes)\n"
 		"or even `define-syntax` (see Macros).\n"))
+
+;; 4.6 Local Binding
+(lprint
+	'("4.6 Local Binding\n"
+		"Although internal defines can be used for local binding,  Racket provides\n"
+		"three forms that give the programmer more control over bindings: `let`, `let+`, and `letrec`.\n\n"))
+
+;; 4.6.1 Parallel Binding: let
+(lprint
+	'("4.6.1 Parallel Binding: let\n"
+		"A `let` form binds a set of identifiers, each to the result of somee expression,\n"
+		"for use in the `let` body:\n\t"
+		"(let ([id expr] ...) body ...+)\n\n"
+		"The ids are bound \"in parallel.\" That is, no id is bound in the right-hand side expr\n"
+		"for any id, but all are available in the body. The ids must be different from each other.\n"
+		"\t(let ([me \"Bob\"]) me) -> \"Bob\"\n\n\t"
+		"(let ([me \"Bob\"]\n\t\t[myself \"Robert\"]\n\t\t[I \"Bobby\"])\n\t"
+		"(list me myself I)) -> '(\"Bob\" \"Robert\" \"Bobby\")\n\n"
+		"\t(let ([me \"Bob\"]\n\t\t[me \"Bobby\"])\n\tme) -> Error: Dublicate identifier\n\n"
+		"The fact that an ids expr does not see its own binding is often useful for wrappers that must\n"
+		"refer back to the old value:\n\t"
+		"(let ([+ (lambda (x y)\n\t"
+		"           (if (string? x)\n\t"
+		"               (string-append x y)\n\t"
+		"               (+ x y)))]) ; Use original\n\t"
+		"  (list (+ 1 2)\n\t"
+		"        (+ \"see\" \"saw\")))\n\t -> '(3 \"seesaw\")\n\n"
+		"Occasionally, the parallel nature of let bindings is convenient for swapping\n"
+		"or rearranging a set of bindings:\n\t"
+		"(let ([me \"Tarzan\"] [you \"Jane\"])\n\t"
+		"  (let ([me you] [you me])\n\t"
+		"    (list me you))) -> '(\"Jane\" \"Tarzan\")\n\n"
+		"The characterization of let bindings as \"parallel\" is not meant to imply concurrent\n"
+		"evaluation. The exprs are evaluated in order, even though the bindings\n"
+		"are delayed until all exprs are evaluated.\n\n"))
