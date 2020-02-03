@@ -1,5 +1,6 @@
 #lang racket
 (provide getpath)
+(provide pathbins)
 
 (define env (current-environment-variables))
 
@@ -13,10 +14,9 @@
 (define (getpath)
 	(string-split (getpath-str env) ":"))
 
-; Now, let's build a hash table of our available binares
+; Build a list of hashes for the directories in $PATH
 (define (pathbins)
-	(lambda () 
-		(map hash (getpath) (pathlsts))))
+	(map hash (getpath) (pathlsts)))
 
 ; Get a list of directory contents
 (define (pathlsts)
