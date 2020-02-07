@@ -462,3 +462,35 @@
 		"The characterization of let bindings as \"parallel\" is not meant to imply concurrent\n"
 		"evaluation. The exprs are evaluated in order, even though the bindings\n"
 		"are delayed until all exprs are evaluated.\n\n"))
+
+;; 4.6.2 Sequential Binding: let*
+(lprint
+  '("4.6.2 Sequential Binding: let+\n"
+    "The syntax of `let+` is the same as `let`:\n\t"
+    "(let* ([id expr] ...) body ...+)\n\n"
+    "The difference is that each id is available for use in later exprs, as well as in the body.\n"
+    "Furthermore, the ids need not be distinct, the most recent binding is the visible one.\n"
+    "For example:\n\t"
+    "(let* ([x (list \"Burroughs\")]\n\t"
+    "       [y (cons \"Rice\" x)]\n\t"
+    "       [z (cons \"Edgar\" y)])\n\t"
+    "  (list x y z))\n\t"
+    "'((\"Burroughs\") (\"Rice\" \"Burroughs\") (\"Edgar\" \"Rice\" \"Burroughs\"))\n\n\t"
+    "(let* ([name (list \"Burroughs\")]\n\t"
+    "       [name (cons \"Rice\")]\n\t"
+    "       [name (cons \"Edgar\")]\n\t"
+    "  name)\n\t"
+    "'(\"Edgar\" \"Rice\" \"Burroughs\")\n\n"
+    ))
+(printf "First sequential let example:\n\t")
+((lambda ()
+   (let* ([x (list "Burroughs")]
+          [y (cons "Rice" x)]
+          [z (cons "Edgar" y)])
+     (list x y z))))
+(printf "\nSecond example:\n\t")
+((lambda ()
+   (let* ([name (list "Burroughs")]
+          [name (cons "Rice" name)]
+          [name (cons "Edgar" name)])
+     name)))
