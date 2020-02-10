@@ -541,6 +541,8 @@
     "(letrec ([quicksand quicksand])\n\t  quicksand)\n\t-> Err: quicksand: undefined;\n\n"
     ))
 
+;; These examples are written as immediately called lambdas so as to avoid polluting definitions,
+;; it also helps ensure that a given section can actually run devoid of additional context.
 (printf "First example live results:\n")
 ((lambda ()
    (letrec ([swing
@@ -573,3 +575,33 @@
      (tarzan-near-top-of-tree? "tmp"
                                (find-system-path 'temp-dir)
                                4))))
+
+;; 4.6.4 Named let
+(lprint
+  '("\n4.6.4 Named `let`\n"
+    "A named `let` is an iteration and recursion form. It uses the same syntactic keyword `let'\n"
+    "as for local binding, but an identifier after the `let` (instead of an immediate open parentheses)\n"
+    "triggers a different parsing.\nE.g.:\n\t"
+    "(let proc-id ([arg-id init-expr] ...)\n\t  body ...+)\n\n"
+    "A named `let` is equivalent to:\n\t"
+    "(letrec ([proc-id (lambda (arg-id ...)\n\t"
+    "                             body ...+)])\n\t"
+    "  (proc-id init-expr))\n\n"
+    "That is, a named `let` binds a function identifier that is visible only in the function's body,\n"
+    "and it implicitly calls the function with the values of some initial expressions.\nE.g.:\n\t"
+    "(define (duplicate pos lst)\n\t  (let dup ([i 0]\n\t"
+    "            [lst lst])\n\t  (cond\n\t    [(= i pos) (cons (car lst) lst)]\n\t"
+    "    [else (cons (car lst) (dup (+ i 1) (cdr lst)))])))\n\n\t"
+    "(duplicate 1 (list \"apple\" \"cheese burger!\" \"banana\"))\n\t->"
+    "'(\"apple\" \"cheese burger!\" \"cheese burger!\" \"banana\")\n\n"
+    ))
+
+(printf "Live example results:\n")
+((lambda ()
+   (define (duplicate pos lst)
+     (let dup ([i 0]
+               [lst lst])
+       (cond
+         [(= i pos) (cons (car lst) lst)]
+         [else (cons (car lst) (dup (+ i 1) (cdr lst)))])))
+   (duplicate 1 (list "apple" "cheese burger!" "banana"))))
