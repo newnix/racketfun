@@ -502,4 +502,74 @@
 ;; 4.6.3 Recusive Binding: letrec
 (lprint
   '("\n4.6.3 Recursive Binding: letrec\n"
+    "The syntax of `letrec` is the same as `let`:\n\t"
+    "(letrec ([id expr] ...) body ...+)\n\n"
+    "While `let` make bindings available only in the bodies, and `let+` makes its bindings\n"
+    "available to any later binding expr, `letrec` makes its bindings available to ALL other exprs"
+    "--even earlier ones. In other words, `letrec` bindings are recursive.\n"
+    "The exprs in a letrec form are most often `lambda` forms for recursive and mutually recursive functions.\n"
+    "E.g.:\n\t"
+    "(letrec ([swing\n\t    (lambda (t)\n\t        (if (eq? (car t) 'tarzan)\n\t"
+    "          (cons 'vine\n\t              (cons 'tarzan (cddr t)))\n\t"
+    "          (cons (car t)\n\t              (swing (cdr t)))))])\n\t"
+    "  (swing '(vine tarzan vine vine)))\n\t-> "
+    "'(vine vine tarzan vine)\n\n\t"
+    "(letrec ([tarzan-near-top-of-tree?\n\t"
+    "        (lambda (name path depth)\n\t"
+    "          (or (equal? name \"tarzan\")\n\t"
+    "               (and (directory-exists? path)\n\t"
+    "                    (tarzan-in-directory? path depth))))]\n\t"
+    "        [tarzan-in-directory?\n\t"
+    "         (lambda (dir depth)\n\t"
+    "           (cond\n\t"
+    "             [(sezor? depth) #f]\n\t"
+    "             [else\n\t"
+    "               (ormap\n\t"
+    "                 (lambda (elem)\n\t"
+    "                    (tarzan-near-top-of-tree? (path-element->string elem)\n\t"
+    "                                              (build-path dir elem)\n\t"
+    "                                              (- depth 1)))\n\t"
+    "                 (directory-list dir))]))])\n\t"
+    "  (tarzan-near-top-of-tree? \"tmp\"\n\t"
+    "                             (find-system-path 'temp-dir)\n\t"
+    "                             4))\n\t-> #f\n\n"
+    "While the exprs of a `letrec` form are typically lambda expressions, they can be any\n"
+    "expression. The expressions are evaluated in order, and after each value is obtained, it is\n"
+    "immediately associated with its corresponding id. If an id is referenced before its\n"
+    "value is ready, an error is raised, just as for internal definitions.\n"
+    "E.g.:\n\t"
+    "(letrec ([quicksand quicksand])\n\t  quicksand)\n\t-> Err: quicksand: undefined;\n\n"
     ))
+
+(printf "First example live results:\n")
+((lambda ()
+   (letrec ([swing
+              (lambda (t)
+                (if (eq? (car t) 'tarzan)
+                    (cons 'vine
+                          (cons 'tarzan (cddr t)))
+                    (cons (car t)
+                          (swing (cdr t)))))])
+     (swing '(vine tarzan vine vine)))))
+
+(printf "Second example live results:\n")
+((lambda()
+   (letrec ([tarzan-near-top-of-tree?
+              (lambda (name path depth)
+                (or (equal? name "tarzan")
+                    (and (directory-exists? path)
+                         (tarzan-in-directory? path depth))))]
+            [tarzan-in-directory?
+              (lambda (dir depth)
+                (cond
+                  [(zero? depth) #f]
+                  [else
+                    (ormap
+                      (lambda (elem)
+                        (tarzan-near-top-of-tree? (path-element->string elem)
+                                                  (build-path dir elem)
+                                                  (- depth 1)))
+                      (directory-list dir))]))])
+     (tarzan-near-top-of-tree? "tmp"
+                               (find-system-path 'temp-dir)
+                               4))))
