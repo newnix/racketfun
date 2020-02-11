@@ -673,3 +673,53 @@
     "optional. To perform (or skip) side-effects based on a test-expr, use `when` or `unless`\n"
     "described later under \"Sequencing\".\n\n"
     ))
+
+;; 4.7.2 Combining Tests: `and` and `or`
+(lprint
+  '("4.7.2 Combining Tests: `and` and `or`\n"
+    "Racket's `and` and `or` are syntactic forms, rather than functions. Unlike a function,\n"
+    "the `and` and `or` forms can skip evaluation of later expressions if an earlier one\n"
+    "determines the answer. This is what's known as \"short circuiting\".\n"
+    "\t(and expr ...)\n\n"
+    "An `and` form produces `#f` if ANY of its exprs produces `#f`. Otherwise\n"
+    "it produces the value of its last expr. As a special case, `(and)` produces `#t`.\n\t"
+    "(or expr ...)\n\n"
+    "The `or` form produces `#f` if ALL of its exprs produce `#f`. Otherwise\n"
+    "it produces the first non-`#f` value from its exprs. As a special\n"
+    "case, `(or)` produces `#f`.\nE.g.:\n\t"
+    "(define (got-milk? lst)\n\t  (and (not (null? lst))\n\t"
+    "      (or (eq? 'milk (car lst))\n\t"
+    "          (got-milk? (cdr lst))))) ; Recurse only if needed\n\t"
+    "(got-milk? '(apple banana)) -> #f\n\t"
+    "(got-milk? '(apple milk banana)) -> #t\n\n"
+    "If evaluation reaches the last expr of an `and` or `or` form, then the expr's value\n"
+    "directly determines the `and` or `or` result. Therefore, the last expr is\n"
+    "in tail position, which means that the example `got-milk?` function runs in constant space.\n"
+    ))
+(printf "Live results of got-milk? example: ")
+((lambda()
+   (define (got-milk? lst)
+     (and (not (null? lst))
+          (or (eq? 'milk (car lst))
+              (got-milk? (cdr lst)))))
+   (got-milk? '(apple milk bananas))))
+
+;; 4.7.3 Chaining Tests: `cond`
+(lprint
+  '("\n4.7.3 Chaining Tests: `cond`\n"
+    "The `cond` form chains a series of tests to select a result expression. To \n"
+    "a first approximation, the syntax of a `cond` is as follows:\n\t"
+    "(cond [test-expr body ...+]\n\t    ...)\n\n"
+    "Each test-expr is evaluated in order. If it produces #f, the corresponding bodies\n"
+    "are ignored, and evaluation proceeds to the next test-expr. As soon\n"
+    "as a test-expr produces a true value, its bodies are evaluated to \n"
+    "produce the result for the `cond` form, and no further\n"
+    "test-exprs are evaluated.\n"
+    "The last test-expr in a `cond` can be replaced by `else`. In terms\n"
+    "of evaluation, else serves as a synonym for #t, but it clarifies\n"
+    "that the last clause is meant to catch all remaining cases.\n"
+    "If `else` is not used, it is possible that no test-exprs\n"
+    "produce a true value; in that case, the result of the\n"
+    "`cond` expression is `#<void>`.\n"
+    "Examples:\n\t"
+    ))
