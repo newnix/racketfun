@@ -605,3 +605,25 @@
          [(= i pos) (cons (car lst) lst)]
          [else (cons (car lst) (dup (+ i 1) (cdr lst)))])))
    (duplicate 1 (list "apple" "cheese burger!" "banana"))))
+
+;; 4.6.5 Multiple Values: let-values, let*-values, letrec-values
+(lprint
+  '("\n4.6.5 Multiple Values: `let-values`, `let*-values`, `letrec-values`\n"
+    "In the same way that `define-values` binds multiple results in a definition (see\n"
+    "Multiple Values and `raco doc define-values`), `let-values`, `let*-values`, and\n"
+    "`letrec-values` bind multiple results locally.\nE.g.:\n\t"
+    "(let-values ([(id ...) expr] ...)\n\t  body ...+)\n\n\t"
+    "(let*-values ([(id ...) expr] ...)\n\t  body ...+)\n\n\t"
+    "(letrec-values ([id ...) expr] ...)\n\t  body ...+)\n\n"
+    "Each expr must produce as many values as corresponding ids.\n"
+    "The binding rules are the same for the forms without '-values' forms;\n"
+    "the ids of the `let-values` are bound only in the bodys, the ids of\n"
+    "`let*-values` are bound in the exprs of later clauses, and the ids\n"
+    "of `letrec-values` are bound for all exprs.\nE.g.:\n\t"
+    "(let-values ([(q r) (quotient/remainder 14 3)])\n\t"
+    "  (list q r))\n\t-> '(4 2)\n\n"
+    ))
+(printf "Live Example Results:\n")
+((lambda ()
+   (let-values ([(q r) (quotient/remainder 14 3)]) 
+     (list q r))))
