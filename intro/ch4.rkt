@@ -627,3 +627,49 @@
 ((lambda ()
    (let-values ([(q r) (quotient/remainder 14 3)]) 
      (list q r))))
+
+;; 4.7 Conditionals
+(lprint
+  '("\n4.7 Conditionals\n"
+    "Most functions used for branching, such as `<` and `string?`, produce either `#t` or `#f`.\n"
+    "Rackets branching forms, however, treat any value other than `#f` as true. We say\n"
+    "a true value to mean any value other than `#f`.\n"
+    "This convention for \"true value\" meshes well with protocols where `#f` can serve\n"
+    "as failure or to indicate an optional value is not supplied. (Beware of overusing\n"
+    "this trick and remember that an exception is usually a better mechanism to\n"
+    "report failure.)\n"
+    ;; I think I disagree with this, but perhaps the way exceptions are handled in Racket
+    ;; is slightly less frustrating than the way they're done in Python.
+    "For example, the `member` function serves double duty; it can be used\n"
+    "to find the tail of a list that starts with a particular item, or it can be\n"
+    "used to simply check whether an item is in a list:\n\t"
+    "(member \"Groucho\" '(\"Harpo\" \"Zeppo\"))\n\t-> #f\n\n\t"
+    "(member \"Groucho\" '(\"Harpo\" \"Groucho\" \"Zeppo\"))\n\t-> '(\"Groucho\" \"Zeppo\")\n\n\t"
+    "(if (member \"Groucho\" '(\"Harpo\" \"Groucho\" \"Zeppo\"))\n\t"
+    "    'yep\n\t    'nope)\n\t->  'yep\n\n" 
+    ))
+(printf "Live examples:\n1: ")
+((lambda ()
+   (member "Groucho" '("Harpo" "Zeppo"))))
+
+(printf "\n2: ")
+((lambda ()
+   (member "Groucho" '("Harpo" "Groucho" "Zeppo"))))
+
+(printf "\n3: ")
+((lambda ()
+   (if (member "Groucho" '("Harpo" "Groucho" "Zeppo"))
+       'yep
+       'nope)))
+
+;; 4.7.1 Simple Branching: if
+(lprint
+  '("\n4.7.1 Simple Branching: if\n"
+    "In an `if` form,\n\t"
+    "(if test-expr then-expr else-expr)\n\n"
+    "the test-expr is always evaluated. If it produces any value other than `#f`\n"
+    "then then-expr is evaluated. Otherwise, else-expr is evaluated.\n"
+    "An `if` form must have both a then-expr and an else-expr; the latter is NOT\n"
+    "optional. To perform (or skip) side-effects based on a test-expr, use `when` or `unless`\n"
+    "described later under \"Sequencing\".\n\n"
+    ))
