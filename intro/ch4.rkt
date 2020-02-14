@@ -734,4 +734,32 @@
     "(got-milk? '(apple milk banana)) -> #t\n\n"
     "The full syntax of `conf` includes two more kinds of clauses:\n\t"
     "(cond cond-clause ...)\n\t"
+    "  cond-clause = [test-expr then-body ...+]\n\t"
+    "              | [else then-body ...+]\n\t"
+    "              | [test-expr => proc-expr]\n\t"
+    "              | [test-expr]\n\n"
+    "The `=>` variant captures the result of its test-expr and passes \n"
+    "it to the result of the `proc-expr`, hich must be a function of one argument.\n"
+    "Examples:\n\t"
+    "(define (after-groucho lst)\n\t  (cond\n\t"
+    "    [(member \"Groucho\" lst) => cdr]\n\t"
+    "    [else (error \"not there\")]))\n\t"
+    "(after-groucho '(\"Harpo\" \"Groucho\" \"Zeppo\"))\n\t-> '(\"Zeppo\")\n\t"
+    "(after-groucho '(\"Harpo\" \"Zeppo\"))\n\t-> not there\n\n"
+    "A clause that includes only a test-expr is rarely used. It\n"
+    "captures the true result of the test-expr and simply\n"
+    "returns the result for the whole `cond` expression.\n\n"
     ))
+(printf "Live example 1: -> ")
+((cond
+   [(= 2 3) (error "wrong!")]
+   [(= 2 2) 'ok]))
+
+(printf "Live example 2: -> ")
+((cond
+   [(= 2 3) (error "wrong!")]))
+
+(printf "Live example 3: -> ")
+((cond
+   [(= 2 3) (error "wrong!")]
+   [else 'ok]))
