@@ -751,15 +751,117 @@
     "returns the result for the whole `cond` expression.\n\n"
     ))
 (printf "Live example 1: -> ")
-((cond
+(cond
    [(= 2 3) (error "wrong!")]
-   [(= 2 2) 'ok]))
+   [(= 2 2) 'ok])
 
 (printf "Live example 2: -> ")
-((cond
-   [(= 2 3) (error "wrong!")]))
+(cond
+   [(= 2 3) (error "wrong!")])
 
-(printf "Live example 3: -> ")
-((cond
+(printf "\nLive example 3: -> ")
+(cond
    [(= 2 3) (error "wrong!")]
-   [else 'ok]))
+   [else 'ok])
+
+;; 4.8 Sequencing
+(lprint
+  '("\n\n4.8 Sequencing\n"
+    "Racket programmers prefer to write programs with as few side-effects as possible,\n"
+    "since purely functional code is more easily tested and composed into larger programs.\n"
+    "Interaction with the external environment, however, requires sequencing, such as\n"
+    "writitng to a display, opening a graphical window, or manipulating a file on disk.\n"
+    ))
+
+;; 4.8.1 Effects Before: begin
+(lprint
+  '("\n4.8.1 Effects Before: begin\n"
+    "A `begin` expression sequences expressions:\n\t"
+    "(begin expr ...+)\n\n"
+    "The exprs are evaluated in order and the result of all but the last expr is ignored.\n"
+    "The result from the last expr is the result of the `begin` form, and it is in tail\n"
+    "position with respect to the `begin` form.\nExamples:\n\t"
+    "(define (print-triangle height)\n\t"
+    "  (if (zero? height)\n\t    (void)\n\t     (begin\n\t"
+    "      (display (make-string height #\\*))\n\t"
+    "      (newline)\n\t"
+    "      (print-triangle (sub1 height)))))\n\n\t"
+    "(print-triangle 4) ->\n\t"
+    "****\n\t***\n\t**\n\t*\n\n"
+    "Many forms, such as lambda or cond support a sequence of expressions even\n"
+    "without a `begin`. Such positions are sometimes said to have an implicit `begin`.\n"
+    "Examples:\n\t"
+    "(define (print-triangle height)\n\t  (cond\n\t"
+    "    [(positive? height)\n\t"
+    "     (display (make-string height #\\*))\n\t"
+    "     (newline)\n\t"
+    "     (print-triangle (sub1 height))]))\n\t"
+    " (print-triangle 4) ->\n\t"
+    "****\n\t***\n\t**\n\t*\n\n"
+    "The `begin` form is special at the top level, at module level, or\n"
+    "as a body after only internal definitions. In those positions, instead\n"
+    "of forming an expression, the content of `begin` is spliced into the\n"
+    "surrounding context.\nExample:\n\t"
+    "(let ([curly 0])\n\t"
+    "  (begin\n\t"
+    "    (define moe (+ 1 curly))\n\t"
+    "    (define larry (+ 1 moe)))\n\t"
+    "  (list larry curly moe))\n\t -> "
+    " '(2 0 1)\n\n"
+    "This splicing behaviour is mainly useful in macros, discussed later on.\n\n"
+    ))
+(printf "Live example 1: \n")
+((lambda () (define (print-triangle height)
+   (if (zero? height)
+     (void)
+     (begin
+       (display (make-string height #\*))
+       (newline)
+       (print-triangle (sub1 height)))))
+ (print-triangle 4)))
+(printf "\nLive example 2: \n")
+((lambda ()
+   (define (print-triangle height)
+     (cond
+       [(positive? height)
+        (display (make-string height #\*))
+        (newline)
+        (print-triangle (sub1 height))]))
+   (print-triangle 4)))
+(printf "\nLive Example 3: ")
+(let ([curly 0])
+   (begin
+     (define moe (+ 1 curly))
+     (define larry (+ 1 moe)))
+   (list larry curly moe))
+
+;; 4.8.2 Effects After: begin0
+(lprint
+  '("\n\n4.8.2 Effects After: begin0\n"
+    "A `begin0` expression has the same syntax as a `begin` expression:\n\t"
+    "(begin0 expr ...+)\n\n"
+    "The difference is that `begin0` returns the result of the first expr, instead\n"
+    "of the result of the last expr. The `begin0` form is more useful for implementing\n"
+    "side-effects that happen after a computation, especially in the case where the computation\n"
+    "produces an unknown number of results.\nExamples: \n\t"
+    "(define (log-times thunk)\n\t"
+    "  (printf \"Start: ~s\\n\" (current-inexact-milliseconds))\n\t"
+    "  (begin0\n\t"
+    "    (thunk)\n\t"
+    "    (printf \"End..: ~s\\n\" (current-inexact-milliseconds))))\n\t"
+    "(log-times (lambda () (sleep 0.1) 0))\n\t -> "
+    "Start: 1574107139248.073\n\t -> "
+    "End..: 1574107139348.101\n\n"
+    ))
+(printf "Live demo: \n")
+((lambda () (define (log-times thunk)
+   (printf "Start: ~s\n" (current-inexact-milliseconds))
+   (begin0
+     (thunk)
+     (printf "End..: ~s\n" (current-inexact-milliseconds))))
+ (log-times (lambda () (sleep 0.1) 0))))
+
+;; 4.8.3 Effects If...: when and unless
+(lprint
+  '("\n\n4.8.3 Effects If...: `when` and `unless`\n"
+    ))
