@@ -864,4 +864,102 @@
 ;; 4.8.3 Effects If...: when and unless
 (lprint
   '("\n\n4.8.3 Effects If...: `when` and `unless`\n"
+    "The `when` form combines an if-style conditional with sequencing for the \"then\"\n"
+    "clause and no \"else\" clause:\n\t"
+    "(when test-expr then-body ...+)\n\n"
+    "If test-expr produces a true value, then all of the then-bodies\n"
+    "are evaluated. The result of the last then-body is the result of the `when`\n"
+    "form. Otherwise, no then-bodies are evaluated and the result is #<void>\n"
+    "The `unless` form is similar:\n\t"
+    "(unless test-expr then-body ...+)\n\n"
+    "The difference is that the test-expr result is inverted: (like a `(when (not test-expr) ...+)`)\n"
+    "the then-bodies are evaluated only if the test-expr result is #f.\n"
+    "Examples:\n\t"
+    "(define (enumerate lst)\n\t  (if (null? (cdr lst))\n\t"
+    "    (printf \"~a.\\n\" (car lst))\n\t"
+    "    (begin\n\t"
+    "      (printf \"~a, \" (car lst))\n\t"
+    "      (when (null? (cdr (cdr lst)))\n\t"
+    "        (printf \"and \"))\n\t"
+    "      (enumerate (cdr lst)))))\n\n"
+    "\t(enumerate '(\"Larry\" \"Curly\" \"Moe\"))\n\t -> "
+    "Larry, Curly, and Moe.\n\n\t"
+    "(define (print-triangle height)\n\t"
+    "  (unless (zero? height)\n\t"
+    "    (display (make-string height #\\*))\n\t"
+    "    (newline)\n\t"
+    "    (print-triangle (sub1 height))))\n\n\t"
+    "(print-triangle 4) -> \n\t"
+    "****\n\t***\n\t**\n\t*\n\n"
     ))
+(printf "Live example 1: ")
+((lambda ()
+   (define (enumerate lst)
+     (if (null? (cdr lst))
+       (printf "~a.\n" (car lst))
+       (begin
+         (printf "~a, " (car lst))
+         (when (null? (cdr (cdr lst)))
+           (printf "and "))
+         (enumerate (cdr lst)))))
+   (enumerate '("Larry" "Curly" "Moe"))))
+
+(printf "\nLive example 2: \n")
+((lambda ()
+   (define (print-triangle height)
+     (unless (zero? height)
+       (display (make-string height #\*))
+       (newline)
+       (print-triangle (sub1 height))))
+   (print-triangle 4)))
+
+;; 4.9 Assignment: set!
+(lprint
+  '("\n4.9 Assignment: `set!`\n"
+    "Assign to a variable using `set!`:\n\t"
+    "(set! id expr)\n\n"
+    "A `set!` expression evaluates expr and changes id (which must\n"
+    "be bound in the enclosing environment) to the resulting value.\n"
+    "The result of the `set!` expression itself is #<void>.\nExamples:\n\t"
+    "(define greeted null)\n\n\t"
+    "(define (greet name)\n\t"
+    "  (set! greeted (cons name greeted))\n\t"
+    "  (string-append \"Hello, \" name))\n\n\t"
+    "(greet \"Athos\")\n\t-> \"Hello, Athos\"\n\t"
+    "(greet \"Porthos\")\n\t-> \"Hello, Porthos\"\n\t"
+    "(greet \"Aramis\")\n\t-> \"Hello, Aramis\"\n\t"
+    "greeted\n\t-> '(\"Aramis\" \"Porthos\" \"Athos\")\n\n\t"
+    "(define (make-running-total)\n\t"
+    "  (let ([n 0])\n\t    (lambda ()\n\t"
+    "      (set! n (+ n 1))\n\t"
+    "      n)))\n\t"
+    "(define win (make-running-total))\n\t"
+    "(define lose (make-running-total))\n\t"
+    "\n\t(win)\n\t-> 1\n\t"
+    "(win)\n\t-> 2\n\t"
+    "(lose)\n\t-> 1\n\t"
+    "(win)\n\t-> 3\n\n"
+    ))
+(printf "Live example 1: ")
+((lambda ()
+  (define greeted null)
+  (define (greet name)
+    (set! greeted (cons name greeted))
+    (string-append "Hello, " name))
+  (greet "Athos")
+  (greet "Porthos")
+  (greet "Aramis")
+  greeted))
+(printf "\nLive example 2: ")
+((lambda()
+   (define (make-running-total)
+     (let ([n 0])
+       (lambda ()
+         (set! n (+ n 1))
+         n)))
+   (define win (make-running-total))
+   (define lose (make-running-total))
+   (win)
+   (win)
+   (lose)
+   (printf "Wins: ~a\n" (win))))
