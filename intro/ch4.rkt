@@ -963,3 +963,39 @@
    (win)
    (lose)
    (printf "Wins: ~a\n" (win))))
+
+;; 4.9.1 Guidelines for Using Assignment
+(lprint
+  '("\n4.9.1 Guidelines for Using Assignment\n"
+    "Although using `set!` is sometimes appropriate, Racket style generally\n"
+    "discourages the use of `set!`. The following guidelines may help explain\n"
+    "when using `set!` is appropriate.\nNOTE: As in any modern language, assigning"
+    "to a shared identifier\nis no substitue for passing an argument to a procedure"
+    "or getting its result.\n\nTerribad Example:\n\t"
+    "(define name \"unknown\")\n\t"
+    "(define result \"unknown\")\n\t"
+    "(define (greet)\n\t  "
+    "(set! result (string-append \"Hello, \" name)))\n\n\t"
+    "(set! name \"John\")\n\t(greet)\n\tresult\n\t-> "
+    "\"Hello, John\"\n\n"
+    "Ok example:\n\t"
+    "(define (greet name)\n\t  "
+    "(string-append \"Hello, \" name))\n\n\t"
+    "(greet \"John\") -> \"Hello, John\"\n\t"
+    "(greet \"Anna\") -> \"Hello, Anna\"\n\n"
+    "A sequence of assignments to a local variable is far inferior to nested bindings.\n\n"
+    "Bad example:\n\t"
+    "(let* ([tree 0])\n\t  "
+    "(set! tree (list tree 1 tree))\n\t  "
+    "(set! tree (list tree 2 tree))\n\t  "
+    "(set! tree (list tree 3 tree))\n\t  "
+    "tree)\n\t-> "
+    "'(((0 1 0) 2 (0 1 0)) 3 ((0 1 0) 2 (0 1 0)))\n\n"
+    "OK example:\n\t"
+    "(let* ([tree 0])\n\t"
+    "       [tree (list tree 1 tree)]\n\t"
+    "       [tree (list tree 2 tree)]\n\t"
+    "       [tree (list tree 3 tree)]\n\t"
+    "  tree)\n\t-> "
+    "'(((0 1 0) 2 (0 1 0)) 3 ((0 1 0) 2 (0 1 0)))\n\n"
+    ))
