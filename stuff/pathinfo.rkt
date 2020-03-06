@@ -3,8 +3,6 @@
 (provide pathbins)
 
 (define env (current-environment-variables))
-(define path (getpath))
-(define bins (pathlsts))
 
 ; This returns the value of your $PATH as a string
 (define (getpath-str env)
@@ -30,3 +28,10 @@
 		(if (empty? pathlst)
 				'()
 				(hash (first pathlst) (first binslst)))))
+
+(define (unpath lst)
+  (lambda ()
+    (if (empty? lst)
+      '()
+      (path->string (first lst))))
+  (unpath (rest lst)))
