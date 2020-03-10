@@ -1042,11 +1042,42 @@
     "The use of mutable values, such as vectors and hash tables, raises fewer suspicions about\n"
     "the style of a program thas using `set!` directly. Nevertheless, simply replacing `set!`s\n"
     "in a program with `vector-set!`s obviously doesn't improve the style of the program.\n\n"
+    "Live Code Examples:\n"
     ))
+
+(printf "Example 1:\n")
+((lambda()
+ (define greeted null)
+ (define (greet name)
+   (set! greeted (cons name greeted))
+   (string-append "Hello, " name))
+ (greet "Athos")
+ (greet "Porthos")
+ (greet "Aramis")
+ (printf "Greeted ~s\n" greeted)
+ ))
+
+(printf "\nExample 2:\n")
+((lambda()
+   (define (make-running-total)
+     (let ([n 0])
+       (lambda ()
+         (set! n (+ n 1))
+         n)))
+   (define win (make-running-total))
+   (define lose (make-running-total))
+   (printf "win\n")
+   (win)
+   (printf "lose\n")
+   (lose)
+   (printf "win\n")
+   (win)
+   (printf "Win: ~v Lose: ~v\n" ( - (win) 1) (- (lose) 1))
+   ))
 
 ;; 4.9.2 Multiple Values: `set!-values`
 (lprint
-  '("4.9.2 Multiple Values: `set!-values`\n"
+  '("\n\n4.9.2 Multiple Values: `set!-values`\n"
     "The `set!-values` form assigns to multiple values at once, given an expression that\n"
     "produces an appropriate number of values:\n\t"
     "(set!-values (id ...) expr)\n\n"
@@ -1066,4 +1097,29 @@
     "(game #t) ->\n\t1\n\t0\n\n\t"
     "(game #f) ->\n\t1\n\t1\n\n\t"
     "(game #f) ->\n\t1\n\t2\n\n"
+    ))
+
+(printf "Live Code Examples:\n")
+(printf "Super Awful Example:\n")
+((lambda()
+   (define name "unknown")
+   (define result "unknown")
+   (define (greet)
+     (set! result (string-append "Hello, " name)))
+   (set! name "John")
+   (greet)
+   (printf "\tResult: ~s\n" result)
+   ))
+
+(printf "\nOk Example:\n")
+((lambda()
+   (define (greet name)
+     (string-append "I'm sorry, " name))
+   (printf "\t~s\n" (greet "John"))
+   (printf "\t~s\n" (greet "Anna"))
+   ))
+
+;; 4.10 Quoting: quote and '
+(lprint
+  '("\n4.10 Quoting: `quote` and \'\n"
     ))
