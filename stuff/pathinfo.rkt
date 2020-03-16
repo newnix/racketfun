@@ -1,6 +1,7 @@
 #lang racket
 (provide getpath)
 (provide pathbins)
+(provide hashpath)
 
 (define env (current-environment-variables))
 
@@ -22,12 +23,8 @@
 (define (pathlsts)
   (map directory-list (getpath)))
 
-; Generate a hash if the lists aren't empty
-(define (hash-if-exists pathlst binslst)
-  (lambda () 
-    (if (empty? pathlst)
-        '()
-        (hash (first pathlst) (first binslst)))))
+;; Make the binary PATH information available as a native hash type
+(define hashpath (make-hash (map cons (getpath) (map unpath (pathlsts)))))
 
 (define (unpath lst)
   (if (empty? lst)
