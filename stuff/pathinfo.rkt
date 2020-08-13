@@ -24,9 +24,19 @@
   (map directory-list (getpath)))
 
 ;; Make the binary PATH information available as a native hash type
-(define hashpath (make-hash (map cons (getpath) (map unpath (pathlsts)))))
-
 (define (unpath lst)
   (if (empty? lst)
     '()
     (map path->string lst)))
+
+(define hashpath (make-hash (map cons (getpath) (map unpath (pathlsts)))))
+
+;; This is a relatively simple reimplementation of `which(1)`
+;; it may or may not work yet, some logic still needs to be worked out
+(define (pathscan ht str)
+  (for ([i (hash-keys ht)])
+    (if (index-of (hash-ref ht i) str)
+      (printf "~a\n" (string-append i "/" str))
+      #f
+    )
+  ))

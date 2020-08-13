@@ -1166,4 +1166,43 @@
 ;; 4.10 Quoting: quote and '
 (lprint
   '("\n4.10 Quoting: `quote` and \'\n"
+    "THe `quote` form produces a constant:\n\t"
+    "(quote datum)\n\n"
+    "The syntax of a datum is technically specified as anything that the `read` function parses\n"
+    "as a single element. The value of the `quote` form is the same value as `read` would produce for a given datum.\n\n"
+    "The datum can be a symbod, a boolean, a number, a character/byte string, character, empty list, pair/list containg more values\n"
+    "a vector contaning more values, a hash table containing more values, or a box containing another value:\nExamples:\n\t"
+    "(quote apple)\n\t-> 'apple\n\n\t"
+    "(quote #t)\n\t-> #t\n\n\t"
+    "(quote \"hello\")\n\t-> \"hello\"\n\n\t"
+    "(quote ())\n\t-> '()\n\n\t"
+    "(quote ((1 2 3) #(\"z\" x) . the-end))\n\t-> '((1 2 3) #(\"z\" x) . the-end)\n\n\t"
+    "(quote (1 2 . (3)))\n\t-> '(1 2 3)\n\n"
+    "As the last example shows, the datum doesn't have to match the normalized printed form of a value.\n"
+    "A datum cannot be a printed representation that starts with`#<`, so it can't be `#<void>`, `#<undefined>, or #<procedure>.\n"
+    "The `quote` form is rarely used for a datum that is a boolean, number or string by itself, as their printed forms can\n"
+    "already be used as constants. The `quote` form is more typically used for symbols and lists,\n"
+    "which have other meanings (identifiers, function calls, etc.) when not quoted.\n\n"
+    "An expression:\n\t"
+    "'datum\n\n"
+    "is a shorthand for:\n\t"
+    "(quote datum)\n\n"
+    "And this shorthand is almost always used instead of `quote`. The shorthand applies even\n"
+    "within the datum, so it can produce a list containing `quote`.\nExamples:\n\t"
+    "'apple\n\t-> 'apple\n\n\t"
+    "'\"hello\"\n\t-> '\"hello\"\n\n\t"
+    "'(1 2 3)\n\t-> '(1 2 3)\n\n\t"
+    "(display '(you can 'me))\n\t-> (you can (quote me))\n\n"
+    "Live code examples:\n\n"
+    ))
+((lambda()
+   (display '(you can 'me))))
+
+;; 4.11 Quasiquoting: `quasiquote` and `
+(lprint
+  '("\n\n4.11 Quasiquoting: `quasiquote` and '`'\n\n"
+    "The `quasiuote` form is similar to `quote`:\n\t"
+    "(quasiquote datum)\n\n"
+    "However, for each `(unquote expr)` that appears within datum, the expr is evaluated to produce\n"
+    "a value that takes the place of the `unquote` sub-form.\nExample:\n\t"
     ))
